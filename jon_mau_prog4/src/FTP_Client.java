@@ -3,6 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.util.StringTokenizer;
 
 /**
 
@@ -10,13 +15,18 @@
  */
 public class FTP_Client extends javax.swing.JFrame
 {
-
+   Socket sock = null;       // Socket used to connect to Server
+   String filename = "";
+   boolean fileExists = true;
+   boolean lineIsValid = true;
+   
    /**
     Creates new form FTP_Client
     */
    public FTP_Client()
    {
       initComponents();
+      this.setLocationRelativeTo(null);
    }
 
    /**
@@ -47,6 +57,7 @@ public class FTP_Client extends javax.swing.JFrame
       outputMsgLbl = new javax.swing.JLabel();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+      setTitle("*COMPLETELY LEGAL* Awesome FTP Tool + Ultra Platinum Premium Rewards ©1993-2015");
       setResizable(false);
 
       outputTxtArea.setColumns(20);
@@ -67,20 +78,8 @@ public class FTP_Client extends javax.swing.JFrame
 
       portTxtFld.setText("5721");
 
-      serverFileList.setModel(new javax.swing.AbstractListModel()
-      {
-         String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-         public int getSize() { return strings.length; }
-         public Object getElementAt(int i) { return strings[i]; }
-      });
       jScrollPane2.setViewportView(serverFileList);
 
-      clientFileList.setModel(new javax.swing.AbstractListModel()
-      {
-         String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-         public int getSize() { return strings.length; }
-         public Object getElementAt(int i) { return strings[i]; }
-      });
       jScrollPane3.setViewportView(clientFileList);
 
       serverFilesLbl.setText("Server Files");
@@ -149,18 +148,16 @@ public class FTP_Client extends javax.swing.JFrame
                .addComponent(serverFilesLbl)
                .addComponent(clientFilesLbl))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+               .addGroup(layout.createSequentialGroup()
                   .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(putBtn)
-                  .addGap(32, 32, 32))
+                  .addComponent(putBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                .addGroup(layout.createSequentialGroup()
                   .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(getBtn)
-                  .addGap(18, 18, 18)))
-            .addGap(0, 0, 0)
+                  .addComponent(getBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGap(32, 32, 32)
             .addComponent(outputMsgLbl)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -217,6 +214,33 @@ public class FTP_Client extends javax.swing.JFrame
             new FTP_Client().setVisible(true);
          }
       });
+   }
+   
+   private void listRemoteFiles()
+   {
+      try
+      {
+         BufferedReader readSock;  // Used to read data from socket
+         readSock = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+         String remoteFiles = readSock.readLine();
+         if (remoteFiles == null)
+         {
+            lineIsValid = false;
+            return;
+         }
+         StringTokenizer st = new StringTokenizer(remoteFiles);
+         
+         remoteFiles = readSock.readLine();
+      }
+      catch (IOException ex)
+      {
+         
+      }
+   }
+   
+   private void listLocalFiles()
+   {
+      
    }
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
