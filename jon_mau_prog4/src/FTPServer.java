@@ -25,13 +25,22 @@ public class FTPServer
    
    public void run()
    {
+      System.out.println("FTP Server running...");
       try
       {
          ServerSocket servSock = new ServerSocket(LISTEN_PORT);
+         Socket sockThread = null;
+         while(true)
+         {
+            sockThread = servSock.accept();
+            System.out.println("Got a connectiono: " 
+                  + servSock.getInetAddress() + " on port " 
+                  + LISTEN_PORT + " remote port # "+ servSock.getLocalPort());
+         }
       }
       catch(IOException e)
       {
-         
+         e.toString();
       }
    }
 }
