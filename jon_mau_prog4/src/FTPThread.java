@@ -99,11 +99,11 @@ public class FTPThread extends Thread
          writeSock.writeBytes(toSend);
          byte[] buffer = new byte[CHUNK_SIZE];
          int numBytes;
-         numBytes = inStream.read(buffer);
+         numBytes = inRequests.read(buffer);
          while(numBytes != -1)
          {
             writeSock.write(buffer, 0, numBytes);
-            numBytes = inStream.read(buffer);
+            numBytes = inRequests.read(buffer);
          }
       }
       catch(IOException e)
