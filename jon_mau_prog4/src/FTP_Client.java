@@ -30,116 +30,141 @@ public class FTP_Client extends javax.swing.JFrame
    {
 
       jScrollPane1 = new javax.swing.JScrollPane();
-      jTextArea1 = new javax.swing.JTextArea();
+      outputTxtArea = new javax.swing.JTextArea();
       connectionBtn = new javax.swing.JButton();
       getBtn = new javax.swing.JButton();
       putBtn = new javax.swing.JButton();
       hostLbl = new javax.swing.JLabel();
       portLbl = new javax.swing.JLabel();
-      jTextField1 = new javax.swing.JTextField();
-      jTextField2 = new javax.swing.JTextField();
+      hostTxtFld = new javax.swing.JTextField();
+      portTxtFld = new javax.swing.JTextField();
       jScrollPane2 = new javax.swing.JScrollPane();
-      jList1 = new javax.swing.JList();
+      serverFileList = new javax.swing.JList();
       jScrollPane3 = new javax.swing.JScrollPane();
-      jList2 = new javax.swing.JList();
+      clientFileList = new javax.swing.JList();
+      serverFilesLbl = new javax.swing.JLabel();
+      clientFilesLbl = new javax.swing.JLabel();
+      outputMsgLbl = new javax.swing.JLabel();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+      setResizable(false);
 
-      jTextArea1.setColumns(20);
-      jTextArea1.setRows(5);
-      jScrollPane1.setViewportView(jTextArea1);
+      outputTxtArea.setColumns(20);
+      outputTxtArea.setRows(5);
+      jScrollPane1.setViewportView(outputTxtArea);
 
       connectionBtn.setText("Connect");
 
       getBtn.setText("Get");
 
       putBtn.setText("Put");
-      putBtn.setPreferredSize(new java.awt.Dimension(75, 29));
 
       hostLbl.setText("Host");
 
       portLbl.setText("Port");
 
-      jTextField1.setText("jTextField1");
+      hostTxtFld.setText("localhost");
 
-      jTextField2.setText("jTextField2");
+      portTxtFld.setText("5721");
 
-      jList1.setModel(new javax.swing.AbstractListModel()
+      serverFileList.setModel(new javax.swing.AbstractListModel()
       {
          String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
          public int getSize() { return strings.length; }
          public Object getElementAt(int i) { return strings[i]; }
       });
-      jScrollPane2.setViewportView(jList1);
+      jScrollPane2.setViewportView(serverFileList);
 
-      jList2.setModel(new javax.swing.AbstractListModel()
+      clientFileList.setModel(new javax.swing.AbstractListModel()
       {
          String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
          public int getSize() { return strings.length; }
          public Object getElementAt(int i) { return strings[i]; }
       });
-      jScrollPane3.setViewportView(jList2);
+      jScrollPane3.setViewportView(clientFileList);
+
+      serverFilesLbl.setText("Server Files");
+
+      clientFilesLbl.setText("Client Files");
+
+      outputMsgLbl.setText("Output Messages");
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(layout.createSequentialGroup()
+            .addGap(32, 32, 32)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addGroup(layout.createSequentialGroup()
-                  .addGap(198, 198, 198)
-                  .addComponent(connectionBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
+                  .addComponent(outputMsgLbl)
+                  .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                .addGroup(layout.createSequentialGroup()
-                  .addGap(32, 32, 32)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 686, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                      .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 686, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                              .addComponent(hostLbl)
-                              .addGap(18, 18, 18))
-                           .addGroup(layout.createSequentialGroup()
-                              .addComponent(portLbl)
-                              .addGap(23, 23, 23)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                           .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                           .addComponent(jTextField2)))
-                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                           .addComponent(getBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
-                           .addComponent(jScrollPane2))
+                           .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                              .addGroup(layout.createSequentialGroup()
+                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                       .addComponent(hostLbl)
+                                       .addGap(18, 18, 18))
+                                    .addGroup(layout.createSequentialGroup()
+                                       .addComponent(portLbl)
+                                       .addGap(23, 23, 23)))
+                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(hostTxtFld)
+                                    .addGroup(layout.createSequentialGroup()
+                                       .addComponent(portTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                       .addGap(18, 18, 18)
+                                       .addComponent(connectionBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                              .addComponent(getBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                              .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE))
+                           .addComponent(serverFilesLbl))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                           .addComponent(jScrollPane3)
-                           .addComponent(putBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE))))))
-            .addContainerGap(32, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                           .addComponent(clientFilesLbl)
+                           .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                              .addComponent(jScrollPane3)
+                              .addComponent(putBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)))))
+                  .addGap(32, 32, 32))))
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(26, 26, 26)
+            .addGap(32, 32, 32)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(hostLbl)
-               .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+               .addComponent(hostTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGap(14, 14, 14)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(portLbl)
-               .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(33, 33, 33)
-            .addComponent(connectionBtn)
-            .addGap(77, 77, 77)
+               .addComponent(portTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(connectionBtn))
+            .addGap(32, 32, 32)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(serverFilesLbl)
+               .addComponent(clientFilesLbl))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                  .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(putBtn)
+                  .addGap(32, 32, 32))
                .addGroup(layout.createSequentialGroup()
-                  .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addGap(18, 18, 18)
-                  .addComponent(getBtn))
-               .addGroup(layout.createSequentialGroup()
-                  .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addGap(18, 18, 18)
-                  .addComponent(putBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 116, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(32, 32, 32))
+                  .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(getBtn)
+                  .addGap(18, 18, 18)))
+            .addGap(0, 0, 0)
+            .addComponent(outputMsgLbl)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addContainerGap(32, Short.MAX_VALUE))
       );
 
       pack();
@@ -195,18 +220,21 @@ public class FTP_Client extends javax.swing.JFrame
    }
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
+   private javax.swing.JList clientFileList;
+   private javax.swing.JLabel clientFilesLbl;
    private javax.swing.JButton connectionBtn;
    private javax.swing.JButton getBtn;
    private javax.swing.JLabel hostLbl;
-   private javax.swing.JList jList1;
-   private javax.swing.JList jList2;
+   private javax.swing.JTextField hostTxtFld;
    private javax.swing.JScrollPane jScrollPane1;
    private javax.swing.JScrollPane jScrollPane2;
    private javax.swing.JScrollPane jScrollPane3;
-   private javax.swing.JTextArea jTextArea1;
-   private javax.swing.JTextField jTextField1;
-   private javax.swing.JTextField jTextField2;
+   private javax.swing.JLabel outputMsgLbl;
+   private javax.swing.JTextArea outputTxtArea;
    private javax.swing.JLabel portLbl;
+   private javax.swing.JTextField portTxtFld;
    private javax.swing.JButton putBtn;
+   private javax.swing.JList serverFileList;
+   private javax.swing.JLabel serverFilesLbl;
    // End of variables declaration//GEN-END:variables
 }
