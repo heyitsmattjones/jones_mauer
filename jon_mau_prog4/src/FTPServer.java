@@ -1,3 +1,7 @@
+
+import java.io.*;
+import java.net.*;
+
 /**
 
 @author Pauer
@@ -21,6 +25,13 @@ public class FTPServer
    
    public void run()
    {
-      
+      try
+      {
+         ServerSocket servSock = new ServerSocket(LISTEN_PORT);
+      }
+      catch(IOException e)
+      {
+         
+      }
    }
 }
