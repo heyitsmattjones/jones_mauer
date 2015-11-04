@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import javax.swing.ListSelectionModel;
 
 /**
 
@@ -48,6 +49,8 @@ public class FTP_Client extends javax.swing.JFrame
       initComponents();
       this.setLocationRelativeTo(null);
       listLocalFiles();
+      serverFileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      clientFileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
    }
 
    /**
