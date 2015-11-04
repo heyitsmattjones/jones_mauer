@@ -24,6 +24,7 @@ public class FTPThread extends Thread
    private PrintWriter writeCtrlSock;   //Control output stream
    private DataOutputStream writeDataSock;   //Data output stream
    private DataInputStream readDataSock;     //Data input stream
+   private boolean stillConnected;           //is client still connected
    
    public FTPThread(Socket inSock, int DataPortNum)
    {
@@ -39,6 +40,7 @@ public class FTPThread extends Thread
          writeDataSock = null;   //initiallize only when needed
          inStreamFile = null;    //initiallized when sending a file
          readDataSock = null;    //initiallized when data is being received
+         stillConnected = true;
       }
       catch(IOException e)
       {
@@ -50,10 +52,11 @@ public class FTPThread extends Thread
    public void run()
    {
       sendList();
-      while(true)
+      while(stillConnected)
       {
          readCommand();
       }
+      closeControlConnections();
    }
    
    private void readCommand()
@@ -81,6 +84,10 @@ public class FTPThread extends Thread
                throw new Exception("Invalid request sent: " + method);
          }
          sendList();
+      }
+      catch(SocketException e)
+      {
+         stillConnected = false;
       }
       catch(IOException e)
       {
@@ -262,6 +269,25 @@ public class FTPThread extends Thread
          System.out.println("Data connection closed.");
       }
       catch(IOException e)
+      {
+         System.out.println(e.toString());
+      }
+   }
+   
+   private void closeControlConnections()
+   {
+      try
+      {
+         writeCtrlSock.close();
+         readCtrlBuff.close();
+         sock.close();
+         System.out.println("Disconnected from Client");
+      }
+      catch(IOException e)
+      {
+         System.out.println(e.toString());
+      }
+      catch(Exception e)
       {
          System.out.println(e.toString());
       }
