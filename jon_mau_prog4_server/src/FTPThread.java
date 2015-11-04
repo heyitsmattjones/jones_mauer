@@ -64,7 +64,6 @@ public class FTPThread extends Thread
       try
       {
          String request = readCtrlBuff.readLine();
-         System.out.println("SUCCESS :D");
          if (request == null)
             throw new Exception("null request send from client");
          StringTokenizer st = new StringTokenizer(request);
