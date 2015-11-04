@@ -330,7 +330,7 @@ public class FTP_Client extends javax.swing.JFrame
       }
       catch (IOException ex)
       {
-         System.out.println(ex.toString());
+         writeCommErrorLine("Problem getting list of remote files", ex);
       }
    }
    
@@ -383,7 +383,7 @@ public class FTP_Client extends javax.swing.JFrame
       }
       catch (IOException ex)
       {
-         
+         writeCommErrorLine("Problem sending file", ex);
       }
       finally
       {
@@ -392,10 +392,11 @@ public class FTP_Client extends javax.swing.JFrame
             writeDataSock.close();
             writeCommLine("Data Connection Closed.");
             updateFileLists();
+            closeDataSocket();
          }
          catch (IOException ex)
          {
-            
+            writeCommErrorLine("Problem closing DataOutputStream", ex);
          }
       }
    }
@@ -433,7 +434,7 @@ public class FTP_Client extends javax.swing.JFrame
       }
       catch (IOException ex)
       {
-         System.out.println(ex.toString());
+         writeCommErrorLine("Problem getting file from server", ex);
       }
       finally
       {
@@ -442,10 +443,11 @@ public class FTP_Client extends javax.swing.JFrame
             readDataSock.close();
             writeCommLine("Data Connection Closed.");
             updateFileLists();
+            closeDataSocket();
          }
          catch (IOException ex)
          {
-            
+            writeCommErrorLine("Problem closing DataInputStream", ex);
          }
       }
    }
