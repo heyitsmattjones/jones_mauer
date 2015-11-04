@@ -49,8 +49,11 @@ public class FTPThread extends Thread
    @Override
    public void run()
    {
+      while(true)
+      {
       sendList();
       readCommand();
+      }
    }
    
    private void readCommand()
@@ -212,7 +215,7 @@ public class FTPThread extends Thread
          while(numBytes != -1)
          {
             fileSize += numBytes;
-            outStreamFile.write(buffer, 0, numBytes);
+            out.write(buffer, 0, numBytes);
             numBytes = readDataSock.read(buffer);     //added
          }
          out.close();

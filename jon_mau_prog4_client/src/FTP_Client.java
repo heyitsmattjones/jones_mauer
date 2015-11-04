@@ -378,7 +378,7 @@ public class FTP_Client extends javax.swing.JFrame
          writeControlSock.println("GET " + filename);
          openDataSocket();
          readDataSock = new DataInputStream(new BufferedInputStream(dataSock.getInputStream()));
-         FileOutputStream outStreamFile = new FileOutputStream(filename);
+         FileOutputStream outStreamFile = new FileOutputStream("./Files/" + filename);
          BufferedOutputStream fileToReceive = new BufferedOutputStream(outStreamFile);
          byte[] buffer = new byte[CHUNK_SIZE];
          writeCommLine("Receiving the file...");
@@ -386,10 +386,12 @@ public class FTP_Client extends javax.swing.JFrame
          int sizeOfReceivedFile = 0;
          while(numBytes != -1)
          {
-            outStreamFile.write(buffer, 0, numBytes);
+            fileToReceive.write(buffer, 0, numBytes);
             sizeOfReceivedFile += numBytes;
             numBytes = readDataSock.read(buffer);
          }
+         fileToReceive.close();
+         outStreamFile.close();
          writeCommLine("Got the file: " + filename);
          writeCommLine("Size: " + sizeOfReceivedFile + " Bytes.");
       }
