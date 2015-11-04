@@ -158,6 +158,8 @@ public class FTPThread extends Thread
    //sending file to client
    private void sendFile(String fileName) //completed, not tested, make sure writeDataSock is initialized
    {
+      System.out.println("Sending the file...");
+      int fileSize = 0;
       try
       {
          if (writeDataSock == null)
@@ -167,9 +169,12 @@ public class FTPThread extends Thread
          int numBytes = inStreamFile.read(buffer); //number of bytes read
          while(numBytes != -1)
          {
+            fileSize += numBytes;
             writeDataSock.write(buffer, 0, numBytes);
             numBytes = inStreamFile.read(buffer);
          }
+         System.out.println("File: " + fileName);
+         System.out.println(fileSize + " bytes sent.");
       }
       catch(FileNotFoundException fnf)
       {
@@ -190,6 +195,8 @@ public class FTPThread extends Thread
    {
       String filePath = "Files\\" + fileName;
       FileOutputStream outStreamFile; //used for writing local files
+      System.out.println("Receiving file...");
+      int fileSize = 0;
       try
       {
          outStreamFile  = new FileOutputStream(filePath);
@@ -198,12 +205,14 @@ public class FTPThread extends Thread
          int numBytes = readDataSock.read(buffer);
          while(numBytes != -1)
          {
+            fileSize += numBytes;
             outStreamFile.write(buffer, 0, numBytes);
             numBytes = readDataSock.read(buffer);     //added
          }
          out.close();
          outStreamFile.close();
-         outStreamFile = null;      //for clarification
+         System.out.println("Got the file: " + fileName);
+         System.out.println("Size: " + fileSize + " bytes");
       }
       catch(FileNotFoundException e)
       {
@@ -239,6 +248,7 @@ public class FTPThread extends Thread
          writeDataSock.close();
          dataSock.close();
          dataServer.close();
+         System.out.println("Data connection closed.");
       }
       catch(IOException e)
       {
