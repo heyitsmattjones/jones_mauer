@@ -21,7 +21,7 @@ public class FTPThread extends Thread
    private final int CHUNK_SIZE = 1024;
    private FileInputStream inStreamFile;  //used for sending a local file
    private BufferedReader readCtrlBuff;      //Control reader (reads reqs)
-   private DataOutputStream writeCtrlSock;   //Control output stream
+   private PrintWriter writeCtrlSock;   //Control output stream
    private DataOutputStream writeDataSock;   //Data output stream
    private DataInputStream readDataSock;     //Data input stream
    
@@ -35,7 +35,7 @@ public class FTPThread extends Thread
             throw new IOException("null Socket");
          readCtrlBuff = new BufferedReader(
                new InputStreamReader(sock.getInputStream()));
-         writeCtrlSock = new DataOutputStream(sock.getOutputStream());
+         writeCtrlSock = new PrintWriter(sock.getOutputStream(),true);
          writeDataSock = null;   //initiallize only when needed
          inStreamFile = null;    //initiallized when sending a file
          readDataSock = null;    //initiallized when data is being received
@@ -93,11 +93,10 @@ public class FTPThread extends Thread
       try
       {
          System.out.println("Sending List");
-         writeCtrlSock.writeChars(listFiles());
-         writeCtrlSock.flush();
+         writeCtrlSock.println(listFiles());
          System.out.println("List sent");
       }
-      catch(IOException e)
+      catch(Exception e)
       {
          System.out.println(e.toString());
       }
@@ -152,7 +151,7 @@ public class FTPThread extends Thread
                toSend += files[j++].getName() + " ";
             }
          }
-         toSend += "\n";
+         //toSend += "\n";
       }
       catch(Exception e)
       {
@@ -235,7 +234,8 @@ public class FTPThread extends Thread
    {
       try
       {
-         writeCtrlSock.writeInt(DATA_PORT); //send the client the data port
+         String toSend = "" + DATA_PORT;
+         writeCtrlSock.println(toSend); //send the client the data port
          dataServer = new ServerSocket(DATA_PORT);
          dataSock = dataServer.accept();  //creates a socket
          System.out.println("Established Data Connections with "

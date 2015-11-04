@@ -395,7 +395,7 @@ public class FTP_Client extends javax.swing.JFrame
       }
       catch (IOException ex)
       {
-         
+         System.out.println(ex.toString());
       }
       finally
       {
@@ -458,11 +458,17 @@ public class FTP_Client extends javax.swing.JFrame
       {
          String dataPortNum = readControlSock.readLine();
          int portNum = Integer.parseInt(dataPortNum);
+         System.out.println(portNum +"");
          dataSock = new Socket(hostAddress, portNum);
+         System.out.println("Socket Created");
       }
       catch (IOException ex)
       {
          writeCommErrorLine("Unable to establish data connection", ex);
+      }
+      catch(Exception e)
+      {
+         writeCommErrorLine("471",e);
       }
    }
    
@@ -562,7 +568,7 @@ public class FTP_Client extends javax.swing.JFrame
    */
    public void writeCommErrorLine(String errorMsg, Exception ex)
    {
-      outputTxtArea.append("Error: " + errorMsg + "\n     " + ex + "\n");
+      outputTxtArea.append("Error: " + errorMsg + "\n     " + ex.toString() + "\n");
    }
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
