@@ -63,7 +63,7 @@ public class FTPThread extends Thread
             throw new Exception("null request send from client");
          StringTokenizer st = new StringTokenizer(request);
          String method = st.nextToken();  //1st should be GET or PUT
-         if(method.equals("GET"))
+         if(method.equalsIgnoreCase("GET"))
          {
             //perform GET Operations (giving to client)
             performGet(st.nextToken());  //2nd should be file name
