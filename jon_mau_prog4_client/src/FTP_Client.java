@@ -342,7 +342,7 @@ public class FTP_Client extends javax.swing.JFrame
          writeControlSock.println("PUT " + filename);
          openDataSocket();
          writeDataSock = new DataOutputStream(dataSock.getOutputStream());
-         FileInputStream fileToSend = new FileInputStream(filename);
+         FileInputStream fileToSend = new FileInputStream("./Files/" + filename);
          byte[] buffer = new byte[CHUNK_SIZE];
          writeCommLine("Sending the file...");
          writeCommLine("File: " + filename);

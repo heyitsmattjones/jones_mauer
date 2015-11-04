@@ -138,7 +138,6 @@ public class FTPThread extends Thread
                new DataInputStream(
                      new BufferedInputStream(dataSock.getInputStream()));
          getFile(fileName);
-         readDataSock.close();
          closeDataConnections();
       }
       catch(IOException e)
