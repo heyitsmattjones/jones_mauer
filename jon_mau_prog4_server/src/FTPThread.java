@@ -203,7 +203,7 @@ public class FTPThread extends Thread
    //getting a file from the client
    private void getFile(String fileName)  //completed not tested
    {
-      String filePath = "Files\\" + fileName;
+      String filePath = "./Files/" + fileName;
       FileOutputStream outStreamFile; //used for writing local files
       System.out.println("Receiving file...");
       int fileSize = 0;
