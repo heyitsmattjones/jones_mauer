@@ -138,6 +138,7 @@ public class FTPThread extends Thread
                new DataInputStream(
                      new BufferedInputStream(dataSock.getInputStream()));
          getFile(fileName);
+         readDataSock.close();
          closeDataConnections();
       }
       catch(IOException e)
@@ -191,6 +192,7 @@ public class FTPThread extends Thread
          }
          System.out.println("File: " + fileName);
          System.out.println(fileSize + " bytes sent.");
+         writeDataSock.close();
       }
       catch(FileNotFoundException fnf)
       {
@@ -262,7 +264,7 @@ public class FTPThread extends Thread
    {
       try
       {
-         writeDataSock.close();
+         //writeDataSock.close();
          dataSock.close();
          dataServer.close();
          System.out.println("Data connection closed.");
@@ -270,6 +272,10 @@ public class FTPThread extends Thread
       catch(IOException e)
       {
          System.out.println(e.toString());
+      }
+      catch(Exception e)
+      {
+         
       }
    }
    
