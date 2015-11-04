@@ -1,8 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/**
+Program 4 consists of a basic FTP server and client that utilizes the File
+Transfer Protocol to transfer files from the client to the server and from
+the server to the client. This program runs a server and waits for a
+request from a client, and it also includes the client that connects to the
+server. It then sets up a separate connection for each FTP data request and
+transfers the appropriate files / information.
+@author Matt Jones & Paul Mauer
+*/
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -20,9 +24,11 @@ import java.util.Vector;
 import javax.swing.ListSelectionModel;
 
 /**
-
- @author Pauer
- */
+FTP_Client is the GUI client application that connects to a FTP server.
+It provides functionality to initiate a connection with a FTP server and
+transfer files back and forth as requested.
+@author Paul Mauer & Matt Jones
+*/
 public class FTP_Client extends javax.swing.JFrame
 {
    Socket controlSock = null;    // Socket used to connect to Server
@@ -40,8 +46,9 @@ public class FTP_Client extends javax.swing.JFrame
    private final int CHUNK_SIZE = 1024;
    
    /**
-    Creates new form FTP_Client
-    */
+   FTP_Client Constructor: Creates new form FTP_Client and initializes data
+   and components
+   */
    public FTP_Client()
    {
       this.localFilesList = new Vector();
@@ -215,9 +222,7 @@ public class FTP_Client extends javax.swing.JFrame
    private void connectionBtnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_connectionBtnActionPerformed
    {//GEN-HEADEREND:event_connectionBtnActionPerformed
       if (!isConnectedToServer())
-      {
          openControlSocket();
-      }
       else
          closeControlSocket();
    }//GEN-LAST:event_connectionBtnActionPerformed
@@ -249,8 +254,10 @@ public class FTP_Client extends javax.swing.JFrame
    }//GEN-LAST:event_putBtnActionPerformed
 
    /**
-    @param args the command line arguments
-    */
+   Main method of FTP_Client
+   Runs an instance of the GUI application
+   @param args the command line arguments
+   */
    public static void main(String args[])
    {
       /* Set the Nimbus look and feel */
@@ -298,6 +305,10 @@ public class FTP_Client extends javax.swing.JFrame
       });
    }
    
+   /**
+   Listens for a list of remote files from the server and formats them to
+   display in a JList for file selection.
+   */
    private void listRemoteFiles()
    {
       try
@@ -323,6 +334,10 @@ public class FTP_Client extends javax.swing.JFrame
       }
    }
    
+   /**
+   Generates a list of all local files from the client and formats them to
+   display in a JList for file selection.
+   */
    private void listLocalFiles()
    {
       File dir = new File("./Files");
@@ -338,6 +353,13 @@ public class FTP_Client extends javax.swing.JFrame
       clientFileList.setListData(localFilesList);
    }
    
+   /**
+   Sends a file to the server.
+   Tells the server to receive a file and what the filename is.
+   Then sends the file in chunks defined by CHUNK_SIZE until the transfer is
+   complete.
+   @param filename is the name of the file to send to the server.
+   */
    private void sendFile(String filename)
    {
       try
@@ -378,6 +400,13 @@ public class FTP_Client extends javax.swing.JFrame
       }
    }
    
+   /**
+   Receives a file from the server.
+   Tells the server to send a file and what the filename is.
+   Then receives the file in chunks defined by CHUNK_SIZE until the transfer
+   is complete.
+   @param filename is the name of the file to receive from the server.
+   */
    private void getFile(String filename)
    {
       try
@@ -431,15 +460,16 @@ public class FTP_Client extends javax.swing.JFrame
    }
    
    /**
-   Establishes a connection with the specified server. Appropriate error
-   messages are printed if the program is unable to establish a connection
-   with the specified server of if the port number is invalid.
+   Establishes a control connection with the specified FTP server.
+   Appropriate error messages are printed if the program is unable to
+   establish a connection with the specified server of if the port number is
+   invalid.
    */
    public void openControlSocket()
    {
       try
       {
-         if (AddressAndPortNumHaveValue())
+         if (addressAndPortNumHaveValue())
          {
             int portNum = Integer.parseInt(portTxtFld.getText());
             hostAddress = hostTxtFld.getText();
@@ -462,6 +492,11 @@ public class FTP_Client extends javax.swing.JFrame
       }
    }
    
+   /**
+   Establishes a data connection with the specified FTP server.
+   Appropriate error messages are printed if the program is unable to
+   establish a connection with the specified server.
+   */
    public void openDataSocket()
    {
       try
@@ -476,10 +511,6 @@ public class FTP_Client extends javax.swing.JFrame
       {
          writeCommErrorLine("Unable to establish data connection", ex);
       }
-      catch(Exception e)
-      {
-         writeCommErrorLine("471",e);
-      }
    }
    
    /**
@@ -487,7 +518,7 @@ public class FTP_Client extends javax.swing.JFrame
    @return true if neither the address nor the port number are null,
    false otherwise
    */
-   public boolean AddressAndPortNumHaveValue()
+   public boolean addressAndPortNumHaveValue()
    {
       if (hostTxtFld.getText().equals(""))
       {
