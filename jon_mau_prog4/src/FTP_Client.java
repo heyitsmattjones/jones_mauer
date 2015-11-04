@@ -3,16 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
 
@@ -31,7 +34,8 @@ public class FTP_Client extends javax.swing.JFrame
    DataOutputStream writeControlSock;    // Used to write data to control socket
    BufferedReader readControlSock;  // Used to read data from control socket
    DataOutputStream writeDataSock;       // Used to write data to data socket
-   BufferedReader readDataSock;     // Used to read data from data socket
+   DataInputStream readDataSock;     // Used to read data from data socket
+   private final int CHUNK_SIZE = 1024;
    
    /**
     Creates new form FTP_Client
@@ -334,11 +338,35 @@ public class FTP_Client extends javax.swing.JFrame
          writeControlSock.writeChars("PUT " + filename);
          openDataSocket();
          writeDataSock = new DataOutputStream(dataSock.getOutputStream());
-         writeDataSock.writeChars(filename);
+         FileInputStream fileToSend = new FileInputStream(filename);
+         byte[] buffer = new byte[CHUNK_SIZE];
+         writeCommLine("Sending the file...");
+         writeCommLine("File: " + filename);
+         int numBytes = fileToSend.read(buffer); //number of bytes read
+         int sizeOfSentFile = 0;
+         while(numBytes != -1)
+         {
+            writeDataSock.write(buffer, 0, numBytes);
+            sizeOfSentFile += numBytes;
+            numBytes = fileToSend.read(buffer);
+         }
+         writeCommLine(sizeOfSentFile + " bytes sent.");
       }
       catch (IOException ex)
       {
          
+      }
+      finally
+      {
+         try
+         {
+            writeDataSock.close();
+            writeCommLine("Data Connection Closed.");
+         }
+         catch (IOException ex)
+         {
+            
+         }
       }
    }
    
@@ -348,11 +376,37 @@ public class FTP_Client extends javax.swing.JFrame
       {
          writeControlSock.writeChars("GET " + filename);
          openDataSocket();
-         readDataSock = new BufferedReader(new InputStreamReader(dataSock.getInputStream()));
+         readDataSock = new DataInputStream(new BufferedInputStream(dataSock.getInputStream()));
+         FileOutputStream outStreamFile = new FileOutputStream(filename);
+         BufferedOutputStream fileToReceive = new BufferedOutputStream(outStreamFile);
+         byte[] buffer = new byte[CHUNK_SIZE];
+         writeCommLine("Receiving the file...");
+         int numBytes = readDataSock.read(buffer); //number of bytes read
+         int sizeOfReceivedFile = 0;
+         while(numBytes != -1)
+         {
+            outStreamFile.write(buffer, 0, numBytes);
+            sizeOfReceivedFile += numBytes;
+            numBytes = readDataSock.read(buffer);
+         }
+         writeCommLine("Got the file: " + filename);
+         writeCommLine("Size: " + sizeOfReceivedFile + " Bytes.");
       }
       catch (IOException ex)
       {
          
+      }
+      finally
+      {
+         try
+         {
+            readDataSock.close();
+            writeCommLine("Data Connection Closed.");
+         }
+         catch (IOException ex)
+         {
+            
+         }
       }
    }
    
