@@ -170,7 +170,7 @@ public class FTPThread extends Thread
       {
          if (writeDataSock == null)
             throw new Exception("DataOutput not initialized");
-         inStreamFile = new FileInputStream(fileName);
+         inStreamFile = new FileInputStream("./Files/" + fileName);
          byte[] buffer = new byte[CHUNK_SIZE];
          int numBytes = inStreamFile.read(buffer); //number of bytes read
          while(numBytes != -1)
