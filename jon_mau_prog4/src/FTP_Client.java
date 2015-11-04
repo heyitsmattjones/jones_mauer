@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -26,6 +27,7 @@ public class FTP_Client extends javax.swing.JFrame
    Socket dataSock = null;       // Socket used to transfer data with Server
    String filename = "";
    boolean fileExists = true;
+   boolean lineIsValid = true;
    Vector remoteFilesList;
    Vector localFilesList;
    String hostAddress = "";
@@ -44,18 +46,7 @@ public class FTP_Client extends javax.swing.JFrame
       this.remoteFilesList = new Vector();
       initComponents();
       this.setLocationRelativeTo(null);
-      try
-      {
-         readControlSock = new BufferedReader(
-                  new InputStreamReader(controlSock.getInputStream()));
-         writeControlSock = 
-               new DataOutputStream(controlSock.getOutputStream());
-         listLocalFiles();
-      }
-      catch(IOException e)
-      {
-         e.toString();
-      }
+      listLocalFiles();
    }
 
    /**
@@ -308,6 +299,11 @@ public class FTP_Client extends javax.swing.JFrame
       try
       {
          String remoteFiles = readControlSock.readLine();
+         if (remoteFiles == null)
+         {
+            lineIsValid = false;
+            return;
+         }
          StringTokenizer st = new StringTokenizer(remoteFiles);
          for (int i = 0; i < st.countTokens(); i++)
          {
@@ -317,7 +313,7 @@ public class FTP_Client extends javax.swing.JFrame
       }
       catch (IOException ex)
       {
-         
+         System.out.println(ex.toString());
       }
    }
    
@@ -437,6 +433,10 @@ public class FTP_Client extends javax.swing.JFrame
             int portNum = Integer.parseInt(portTxtFld.getText());
             hostAddress = hostTxtFld.getText();
             controlSock = new Socket(hostAddress, portNum);
+            readControlSock = new BufferedReader(
+                  new InputStreamReader(controlSock.getInputStream()));
+            writeControlSock = 
+                  new DataOutputStream(controlSock.getOutputStream());
             connectedToServer();
             listRemoteFiles();
          }
@@ -562,12 +562,6 @@ public class FTP_Client extends javax.swing.JFrame
    public void writeCommErrorLine(String errorMsg, Exception ex)
    {
       outputTxtArea.append("Error: " + errorMsg + "\n     " + ex + "\n");
-   }
-   
-   private void updateFileLists()
-   {
-      listRemoteFiles();
-      listLocalFiles();
    }
 
    // Variables declaration - do not modify//GEN-BEGIN:variables

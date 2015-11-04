@@ -79,11 +79,11 @@ public class FTPThread extends Thread
       }
       catch(IOException e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
       catch(Exception e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
    }
    
@@ -91,11 +91,14 @@ public class FTPThread extends Thread
    {
       try
       {
+         System.out.println("Sending List");
          writeCtrlSock.writeChars(listFiles());
+         writeCtrlSock.flush();
+         System.out.println("List sent");
       }
       catch(IOException e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
    }
    
@@ -111,7 +114,7 @@ public class FTPThread extends Thread
       }
       catch(IOException e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
    }
    
@@ -129,7 +132,7 @@ public class FTPThread extends Thread
       }
       catch(IOException e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
    }
    
@@ -140,15 +143,20 @@ public class FTPThread extends Thread
       {
          File dir = new File("Files");     //creates File & sets file pathname, I think this specifies which folder to look in.
          File[] files = dir.listFiles();   //get the list of all files in dir
-         for(int i = files.length; i > 0; i--)
+         int j = 0;
+         for (File file : files)
          {
-            if(files[i].isFile())
-               toSend += files[i].getName() + " ";
+            if (file.isFile())
+            {
+               toSend += files[j++].getName() + " ";
+            }
          }
+         toSend += "\n";
       }
       catch(Exception e)
       {
-         e.toString();
+         System.out.println(e.toString());
+         System.out.println("UH oH");
       }
       return toSend;
    }
@@ -180,11 +188,11 @@ public class FTPThread extends Thread
       }
       catch(IOException e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
       catch(Exception e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
    }
    
@@ -214,11 +222,11 @@ public class FTPThread extends Thread
       }
       catch(FileNotFoundException e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
       catch(IOException e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
    }
    
@@ -235,7 +243,7 @@ public class FTPThread extends Thread
       }
       catch(IOException e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
    }
    
@@ -250,7 +258,7 @@ public class FTPThread extends Thread
       }
       catch(IOException e)
       {
-         e.toString();
+         System.out.println(e.toString());
       }
    }
 }
