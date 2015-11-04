@@ -2,23 +2,21 @@
 import java.io.*;
 import java.net.*;
 import java.util.StringTokenizer;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
-
-@author Pauer
+FTPThread handles the interactions and file transfers with a specific client.
+Control communication is kept alive until the client disconnects. Data
+communication sockets are created on demand and closed after use.
+Extends Thread.
+@author Matthew P Jones & Paul Mauer
 */
 public class FTPThread extends Thread
 {
-   private Socket sock = null;  //contorl socket connection  
-   private Socket dataSock;
+   private Socket sock = null;   //contorl socket connection  
+   private Socket dataSock;      //data socket connection
    private ServerSocket dataServer;   //data socket connection
-   private final int DATA_PORT;    //may need to change
-   private final int CHUNK_SIZE = 1024;
+   private final int DATA_PORT;    //passed in initially
+   private final int CHUNK_SIZE = 1024;   //maximum byte size for x-fer
    private FileInputStream inStreamFile;  //used for sending a local file
    private BufferedReader readCtrlBuff;      //Control reader (reads reqs)
    private PrintWriter writeCtrlSock;   //Control output stream
@@ -26,6 +24,12 @@ public class FTPThread extends Thread
    private DataInputStream readDataSock;     //Data input stream
    private boolean stillConnected;           //is client still connected
    
+   /**
+   FTPTread constructor takes in a socket connection to the client and a 
+   specific data port number for file transfer communication.
+   @param inSock  socket connection to client (Control Connection)
+   @param DataPortNum   port number for data communication
+   */
    public FTPThread(Socket inSock, int DataPortNum)
    {
       DATA_PORT = DataPortNum;
@@ -40,7 +44,7 @@ public class FTPThread extends Thread
          writeDataSock = null;   //initiallize only when needed
          inStreamFile = null;    //initiallized when sending a file
          readDataSock = null;    //initiallized when data is being received
-         stillConnected = true;
+         stillConnected = true;  //currently connnected to client
       }
       catch(IOException e)
       {
@@ -49,26 +53,35 @@ public class FTPThread extends Thread
    }
    
    @Override
+   /**
+   run method manages whether to send the list of files or to listen and act
+   on a response. If the client disconnects, calls methods to terminate
+   control connection.
+   */
    public void run()
    {
-      sendList();
+      sendList();    //initially send the list
       while(stillConnected)
       {
-         readCommand();
+         readCommand(); //list is automatically sent after command is executed
       }
       closeControlConnections();
    }
    
+   /**
+   readCommand listens for a GET or PUT request from the client and calls 
+   appropriate acting methods if these command are sent. If an invalid
+   request is sent, it will display on the server console.
+   */
    private void readCommand()
    {
       try
       {
-         String request = readCtrlBuff.readLine();
+         String request = readCtrlBuff.readLine(); //read command from client
          if (request == null)
             throw new Exception("null request send from client");
          StringTokenizer st = new StringTokenizer(request);
          String method = st.nextToken();  //1st should be GET or PUT
-         System.out.println(method);
          switch (method)
          {
             case "GET":
@@ -82,11 +95,11 @@ public class FTPThread extends Thread
             default:
                throw new Exception("Invalid request sent: " + method);
          }
-         sendList();
+         sendList(); //resend the new list
       }
       catch(SocketException e)
       {
-         stillConnected = false;
+         stillConnected = false; //client has disconnected
       }
       catch(IOException e)
       {
@@ -94,18 +107,19 @@ public class FTPThread extends Thread
       }
       catch(Exception e)
       {
-         stillConnected = false;
-         System.out.println(e.toString());
+         stillConnected = false ;   //client has disconnencted
       }
    }
    
+   /**
+   sendLists sends a string to the client over the control socket with the 
+   contents of the files in the ./Files/ directory.
+   */
    private void sendList()
    {
       try
       {
-         System.out.println("Sending List");
          writeCtrlSock.println(listFiles());
-         System.out.println("List sent");
       }
       catch(Exception e)
       {
@@ -113,11 +127,16 @@ public class FTPThread extends Thread
       }
    }
    
+   /**
+   performGet calls sub methods to send a file to the client. It also opens
+   and closes the writeDataSock
+   @param fileName name of the requested file by the client
+   */
    private void performGet(String fileName)
    {
       try
       {
-         openDataPort();
+         openDataPort();   //open data connections
          writeDataSock = new DataOutputStream(dataSock.getOutputStream());
          sendFile(fileName);
          writeDataSock.close();
@@ -129,6 +148,11 @@ public class FTPThread extends Thread
       }
    }
    
+   /**
+   performPut calls sub methods to retrieve a file from the client. It also
+   manages readDataSock.
+   @param fileName   name of the file being sent by the client
+   */
    private void performPut(String fileName)
    {
       try
@@ -147,14 +171,19 @@ public class FTPThread extends Thread
       }
    }
    
+   /**
+   listFiles creates a string containing all the filenames on the server
+   separated by a space.
+   @return String of filenames
+   */
    private String listFiles()  //completed, not verified
    {
       String toSend = "";
       try
       {
-         File dir = new File("./Files");     //creates File & sets file pathname, I think this specifies which folder to look in.
+         File dir = new File("./Files");    //creates File, sets file pathname
          File[] files = dir.listFiles();   //get the list of all files in dir
-         int j = 0;
+         int j = 0;  //file counter, needed incase of folders in Files
          for (File file : files)
          {
             if (file.isFile())
@@ -162,18 +191,19 @@ public class FTPThread extends Thread
                toSend += files[j++].getName() + " ";
             }
          }
-         //toSend += "\n";
       }
       catch(Exception e)
       {
          System.out.println(e.toString());
-         System.out.println("UH oH");
       }
       return toSend;
    }
    
-   //sending file to client
-   private void sendFile(String fileName) //completed, not tested, make sure writeDataSock is initialized
+   /**
+   sendFile send the requested file to the client over the data connection
+   @param fileName file requested by client
+   */
+   private void sendFile(String fileName)
    {
       System.out.println("Sending the file...");
       int fileSize = 0;
@@ -208,8 +238,12 @@ public class FTPThread extends Thread
       }
    }
    
-   //getting a file from the client
-   private void getFile(String fileName)  //completed not tested
+   /**
+   getFile downloads the file sent by the client. It stores it as fileName.
+   If the file cannot be written to it will throw FileNotFoundException
+   @param fileName name of file being sent by client
+   */
+   private void getFile(String fileName)
    {
       String filePath = "./Files/" + fileName;
       FileOutputStream outStreamFile; //used for writing local files
@@ -225,9 +259,9 @@ public class FTPThread extends Thread
          {
             fileSize += numBytes;
             out.write(buffer, 0, numBytes);
-            numBytes = readDataSock.read(buffer);     //added
+            numBytes = readDataSock.read(buffer);
          }
-         out.close();
+         out.close();   //closes the file as it should be all downloaded
          outStreamFile.close();
          System.out.println("Got the file: " + fileName);
          System.out.println("Size: " + fileSize + " bytes");
@@ -242,7 +276,11 @@ public class FTPThread extends Thread
       }
    }
    
-   private void openDataPort()   //complete not tested
+   /**
+   Creates a new data socket connection for file transfer. Send the 
+   port number that the client should connect to over the control connection.
+   */
+   private void openDataPort()
    {
       try
       {
@@ -252,7 +290,7 @@ public class FTPThread extends Thread
          dataSock = dataServer.accept();  //creates a socket
          System.out.println("Established Data Connections with "
                   + dataSock.getInetAddress().toString() + " on Port #"
-                  + DATA_PORT);
+                  + dataSock.getPort() + " with local port: " + DATA_PORT);
       }
       catch(IOException e)
       {
@@ -260,7 +298,11 @@ public class FTPThread extends Thread
       }
    }
    
-   private void closeDataConnections() //complete not tested
+   /**
+   Closes the data socket connection. read/write streams should be closed at
+   the time this is called
+   */
+   private void closeDataConnections()
    {
       try
       {
@@ -275,10 +317,14 @@ public class FTPThread extends Thread
       }
       catch(Exception e)
       {
-         
+         System.out.println(e.toString());
       }
    }
    
+   /**
+   closeControlConnections closes the connections of the control socket after
+   the client has disconnected from the server.
+   */
    private void closeControlConnections()
    {
       try
