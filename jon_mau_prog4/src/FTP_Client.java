@@ -4,10 +4,13 @@
  * and open the template in the editor.
  */
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
 
@@ -15,18 +18,26 @@ import java.util.StringTokenizer;
  */
 public class FTP_Client extends javax.swing.JFrame
 {
-   Socket sock = null;       // Socket used to connect to Server
+   Socket controlSock = null;       // Socket used to connect to Server
    String filename = "";
    boolean fileExists = true;
    boolean lineIsValid = true;
+   Vector remoteFilesList;
+   Vector localFilesList;
+   String hostAddress = "";
+   PrintWriter writeControlSock;    // Used to write data to socket
+   BufferedReader readControlSock;  // Used to read data from socket
    
    /**
     Creates new form FTP_Client
     */
    public FTP_Client()
    {
+      this.localFilesList = new Vector();
+      this.remoteFilesList = new Vector();
       initComponents();
       this.setLocationRelativeTo(null);
+      listLocalFiles();
    }
 
    /**
@@ -65,10 +76,31 @@ public class FTP_Client extends javax.swing.JFrame
       jScrollPane1.setViewportView(outputTxtArea);
 
       connectionBtn.setText("Connect");
+      connectionBtn.addActionListener(new java.awt.event.ActionListener()
+      {
+         public void actionPerformed(java.awt.event.ActionEvent evt)
+         {
+            connectionBtnActionPerformed(evt);
+         }
+      });
 
       getBtn.setText("Get");
+      getBtn.addActionListener(new java.awt.event.ActionListener()
+      {
+         public void actionPerformed(java.awt.event.ActionEvent evt)
+         {
+            getBtnActionPerformed(evt);
+         }
+      });
 
       putBtn.setText("Put");
+      putBtn.addActionListener(new java.awt.event.ActionListener()
+      {
+         public void actionPerformed(java.awt.event.ActionEvent evt)
+         {
+            putBtnActionPerformed(evt);
+         }
+      });
 
       hostLbl.setText("Host");
 
@@ -167,6 +199,42 @@ public class FTP_Client extends javax.swing.JFrame
       pack();
    }// </editor-fold>//GEN-END:initComponents
 
+   private void connectionBtnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_connectionBtnActionPerformed
+   {//GEN-HEADEREND:event_connectionBtnActionPerformed
+      if (!isConnectedToServer())
+      {
+         openControlSocket();
+      }
+      else
+         closeControlSocket();
+   }//GEN-LAST:event_connectionBtnActionPerformed
+
+   private void getBtnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_getBtnActionPerformed
+   {//GEN-HEADEREND:event_getBtnActionPerformed
+      if (isConnectedToServer())
+      {
+         if (serverFileList.getSelectedIndex() != -1)
+            getFile(serverFileList.getSelectedValue().toString());
+         else
+            writeCommLine("Select a file first!");
+      }
+      else
+         writeCommLine("Not connected to server!");
+   }//GEN-LAST:event_getBtnActionPerformed
+
+   private void putBtnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_putBtnActionPerformed
+   {//GEN-HEADEREND:event_putBtnActionPerformed
+      if (isConnectedToServer())
+      {
+         if (clientFileList.getSelectedIndex() != -1)
+            sendFile(clientFileList.getSelectedValue().toString());
+         else
+            writeCommLine("Select a file first!");
+      }
+      else
+         writeCommLine("Not connected to server!");
+   }//GEN-LAST:event_putBtnActionPerformed
+
    /**
     @param args the command line arguments
     */
@@ -209,6 +277,7 @@ public class FTP_Client extends javax.swing.JFrame
       /* Create and display the form */
       java.awt.EventQueue.invokeLater(new Runnable()
       {
+         @Override
          public void run()
          {
             new FTP_Client().setVisible(true);
@@ -220,17 +289,18 @@ public class FTP_Client extends javax.swing.JFrame
    {
       try
       {
-         BufferedReader readSock;  // Used to read data from socket
-         readSock = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-         String remoteFiles = readSock.readLine();
+         String remoteFiles = readControlSock.readLine();
          if (remoteFiles == null)
          {
             lineIsValid = false;
             return;
          }
          StringTokenizer st = new StringTokenizer(remoteFiles);
-         
-         remoteFiles = readSock.readLine();
+         for (int i = 0; i < st.countTokens(); i++)
+         {
+            remoteFilesList.add(st.nextToken());
+         }
+         serverFileList.setListData(remoteFilesList);
       }
       catch (IOException ex)
       {
@@ -240,17 +310,147 @@ public class FTP_Client extends javax.swing.JFrame
    
    private void listLocalFiles()
    {
-      
+      File dir = new File("LocalFiles");
+      File[] files = dir.listFiles();
+      for (File file : files)
+      {
+         if (file.isFile())
+         {
+            localFilesList.add(file.getName());
+         }
+      }
+      clientFileList.setListData(localFilesList);
    }
    
    private void sendFile(String filename)
    {
-      
+      writeControlSock.println("PUT" + filename);
    }
    
    private void getFile(String filename)
    {
+      writeControlSock.println("GET" + filename);
+   }
+   
+   /**
+   Checks the status of the connection to the server.
+   @return true if a connection exists, false otherwise
+   */
+   public boolean isConnectedToServer()
+   {
+      return connectionBtn.getText().equals("Disconnect");
+   }
+   
+   /**
+   Establishes a connection with the specified server. Appropriate error
+   messages are printed if the program is unable to establish a connection
+   with the specified server of if the port number is invalid.
+   */
+   public void openControlSocket()
+   {
+      try
+      {
+         if (AddressAndPortNumHaveValue())
+         {
+            int portNum = Integer.parseInt(portTxtFld.getText());
+            hostAddress = hostTxtFld.getText();
+            controlSock = new Socket(hostAddress, portNum);
+            readControlSock = new BufferedReader(new InputStreamReader(controlSock.getInputStream()));
+            writeControlSock = new PrintWriter(controlSock.getOutputStream(), true);
+            connectedToServer();
+            listRemoteFiles();
+         }
+      }
+      catch (IOException ex)
+      {
+         writeCommErrorLine("Unable to establish a connection", ex);
+      }
+      catch (NumberFormatException ex)
+      {
+         writeCommErrorLine("Invalid port number", ex);
+      }
+   }
+   
+   /**
+   Checks for null values in the IP Address and Port Number text fields.
+   @return true if neither the address nor the port number are null,
+   false otherwise
+   */
+   public boolean AddressAndPortNumHaveValue()
+   {
+      if (hostTxtFld.getText().equals(""))
+      {
+         writeCommLine("Enter server address!");
+         return false;
+      }
       
+      if (portTxtFld.getText().equals(""))
+      {
+         writeCommLine("Enter server port number!");
+         return false;
+      }
+      return true;
+   }
+   
+   /**
+   Terminates a connection with the connected server. Appropriate error
+   messages are printed if the program encounters a problem closing the
+   connection with the server.
+   */
+   public void closeControlSocket()
+   {
+      try
+      {
+         controlSock.close();
+         disconnectedFromServer(controlSock);
+      }
+      catch (IOException ex)
+      {
+         writeCommErrorLine("Problem closing connection", ex);
+         disconnectedFromServer(controlSock);
+      }
+   }
+   
+   /**
+   Prints a message in the window and changes the text on the connection
+   button to "Disconnect" when the connection with the server is established.
+   */
+   public void connectedToServer()
+   {
+      writeCommLine("Connected to Server");
+      connectionBtn.setText("Disconnect");
+   }
+   
+   /**
+   Prints a message in the window and changes the text on the connection
+   button to "Connect" when the connection with the server is terminated.
+    * @param sock
+   */
+   public void disconnectedFromServer(Socket sock)
+   {
+      writeCommLine("Disconnected!");
+      connectionBtn.setText("Connect");
+      sock = null;
+   }
+   
+   /**
+   Writes a line of text to the Client/Server Communication text area
+   @param textToWrite is the text to be printed in the window
+   */
+   public void writeCommLine(String textToWrite)
+   {
+      outputTxtArea.append(textToWrite + "\n");
+   }
+   
+   /**
+   Writes an error message to the Client/Server Communication text area
+   including the exception thrown as a result of the error.
+   @param errorMsg is the written text description of the error
+   @param ex is the exception thrown as a result of the error
+   */
+   public void writeCommErrorLine(String errorMsg, Exception ex)
+   {
+      outputTxtArea.append("Error: " + errorMsg + "\n     " + ex + "\n");
    }
 
    // Variables declaration - do not modify//GEN-BEGIN:variables

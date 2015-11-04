@@ -143,16 +143,25 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Connect"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="connectionBtnActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="getBtn">
       <Properties>
         <Property name="text" type="java.lang.String" value="Get"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getBtnActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="putBtn">
       <Properties>
         <Property name="text" type="java.lang.String" value="Put"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="putBtnActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="hostLbl">
       <Properties>
