@@ -99,20 +99,32 @@ public class FTPThread extends Thread
       }
    }
    
-   private void getFile(String fileName)
+   private void getFile(String fileName)  //completed not tested
    {
       String filePath = "Files\\" + fileName;
       FileOutputStream outStreamFile; //used for writing local files
       try
       {
          outStreamFile  = new FileOutputStream(filePath);
+         BufferedOutputStream out = new BufferedOutputStream(outStreamFile);
+         byte[] buffer = new byte[CHUNK_SIZE];
+         int numBytes = readDataSock.read(buffer);
+         while(numBytes != -1)
+         {
+            outStreamFile.write(buffer, 0, numBytes);
+         }
+         out.close();
+         outStreamFile.close();
+         outStreamFile = null;      //for clarification
       }
       catch(FileNotFoundException e)
       {
          e.toString();
       }
-
-      
+      catch(IOException e)
+      {
+         e.toString();
+      }
    }
    
    private void openDataSock()
