@@ -1,4 +1,12 @@
-
+/**
+Program 4 consists of a basic FTP server and client that utilizes the File
+Transfer Protocol to transfer files from the client to the server and from
+the server to the client. This program runs a server and waits for a
+request from a client, and it also includes the client that connects to the
+server. It then sets up a separate connection for each FTP data request and
+transfers the appropriate files / information.
+@author Matt Jones & Paul Mauer
+*/
 import java.io.*;
 import java.net.*;
 
