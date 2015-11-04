@@ -535,7 +535,7 @@ public class FTP_Client extends javax.swing.JFrame
    */
    public void disconnectedFromServer(Socket sock)
    {
-      writeCommLine("Disconnected!");
+      writeCommLine("Disconnected from Server");
       connectionBtn.setText("Connect");
       sock = null;
    }
