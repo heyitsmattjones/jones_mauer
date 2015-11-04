@@ -17,20 +17,20 @@ public class FTPThread extends Thread
    private Socket sock = null;  //contorl socket connection  
    private Socket dataSock;
    private ServerSocket dataServer;   //data socket connection
-   private final int DATA_PORT = 5720;
+   private final int DATA_PORT;    //may need to change
    private final int CHUNK_SIZE = 1024;
-   private FileInputStream inCtrlReq; //for requests from control connect
    private FileInputStream inStreamFile;  //used for sending a local file
-   private BufferedReader readCtrlBuff;      //Control reader
+   private BufferedReader readCtrlBuff;      //Control reader (reads reqs)
    private DataOutputStream writeCtrlSock;   //Control output stream
    private DataOutputStream writeDataSock;   //Data output stream
    private DataInputStream readDataSock;     //Data input stream
    
-   public FTPThread(Socket inSock)
+   public FTPThread(Socket inSock, int DataPortNum)
    {
+      DATA_PORT = DataPortNum;
       try
       {
-         sock = inSock;  //control connection socket
+         sock = inSock;  //control connection socket         
          if(sock == null)
             throw new IOException("null Socket");
          readCtrlBuff = new BufferedReader(
@@ -39,6 +39,8 @@ public class FTPThread extends Thread
          writeDataSock = null;   //initiallize only when needed
          inStreamFile = null;    //initiallized when sending a file
          readDataSock = null;    //initiallized when data is being received
+         readCtrlBuff = new BufferedReader(
+               new InputStreamReader(sock.getInputStream()));
       }
       catch(IOException e)
       {
@@ -49,15 +51,14 @@ public class FTPThread extends Thread
    @Override
    public void run()
    {
-      listFiles();
+      sendList();
+      readCommand();
    }
    
    private void readCommand()
    {
       try
       {
-         readCtrlBuff = new BufferedReader(
-               new InputStreamReader(sock.getInputStream()));
          String request = readCtrlBuff.readLine();
          if (request == null)
             throw new Exception("null request send from client");
@@ -154,6 +155,7 @@ public class FTPThread extends Thread
       return toSend;
    }
    
+   //sending file to client
    private void sendFile(String fileName) //completed, not tested, make sure writeDataSock is initialized
    {
       try
@@ -183,6 +185,7 @@ public class FTPThread extends Thread
       }
    }
    
+   //getting a file from the client
    private void getFile(String fileName)  //completed not tested
    {
       String filePath = "Files\\" + fileName;
@@ -196,6 +199,7 @@ public class FTPThread extends Thread
          while(numBytes != -1)
          {
             outStreamFile.write(buffer, 0, numBytes);
+            numBytes = readDataSock.read(buffer);     //added
          }
          out.close();
          outStreamFile.close();
@@ -204,18 +208,6 @@ public class FTPThread extends Thread
       catch(FileNotFoundException e)
       {
          e.toString();
-      }
-      catch(IOException e)
-      {
-         e.toString();
-      }
-   }
-   
-   private void closeConnections()
-   {
-      try
-      {
-         dataSock.close();
       }
       catch(IOException e)
       {
@@ -253,23 +245,4 @@ public class FTPThread extends Thread
          e.toString();
       }
    }
-//   private void sendThroughControl(String toSend)
-//   {
-//      try
-//      {
-//         writeCtrlSock.writeBytes(toSend);
-//         byte[] buffer = new byte[CHUNK_SIZE];
-//         int numBytes;
-//         numBytes = inRequests.read(buffer);
-//         while(numBytes != -1)
-//         {
-//            writeCtrlSock.write(buffer, 0, numBytes);
-//            numBytes = inRequests.read(buffer);
-//         }
-//      }
-//      catch(IOException e)
-//      {
-//         e.toString();
-//      }
-//   }
 }

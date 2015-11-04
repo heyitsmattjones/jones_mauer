@@ -8,7 +8,10 @@ import java.net.*;
 */
 public class FTPServer
 {
+   private int nextPort;
    private final int LISTEN_PORT = 5721;
+   private final int START_PORT = 5700;
+   private final int MAX_PORT = 5800;
    
    public static void main(String[] args)
    {
@@ -21,6 +24,11 @@ public class FTPServer
       {
          e.toString();
       }
+   }
+   
+   public FTPServer()
+   {
+      nextPort = START_PORT;
    }
    
    public void run()
@@ -36,11 +44,22 @@ public class FTPServer
             System.out.println("Got a connectiono: " 
                   + servSock.getInetAddress() + " on port " 
                   + LISTEN_PORT + " remote port # "+ servSock.getLocalPort());
+            FTPThread thread = new FTPThread(sockThread, calcPort());
+            thread.start();
          }
       }
       catch(IOException e)
       {
          e.toString();
       }
+   }
+   
+   private int calcPort() //assuming data port overlap won't occur
+   {
+      if (nextPort == LISTEN_PORT)
+         nextPort++;
+      else if (nextPort > MAX_PORT)
+         nextPort = START_PORT;
+      return nextPort++;
    }
 }
