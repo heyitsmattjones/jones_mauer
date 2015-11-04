@@ -242,6 +242,16 @@ public class FTP_Client extends javax.swing.JFrame
    {
       
    }
+   
+   private void sendFile(String filename)
+   {
+      
+   }
+   
+   private void getFile(String filename)
+   {
+      
+   }
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JList clientFileList;
