@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -31,7 +32,7 @@ public class FTP_Client extends javax.swing.JFrame
    Vector remoteFilesList;
    Vector localFilesList;
    String hostAddress = "";
-   DataOutputStream writeControlSock;    // Used to write data to control socket
+   PrintWriter writeControlSock;    // Used to write data to control socket
    BufferedReader readControlSock;  // Used to read data from control socket
    DataOutputStream writeDataSock;       // Used to write data to data socket
    DataInputStream readDataSock;     // Used to read data from data socket
@@ -335,7 +336,7 @@ public class FTP_Client extends javax.swing.JFrame
    {
       try
       {
-         writeControlSock.writeChars("PUT " + filename);
+         writeControlSock.println("PUT " + filename);
          openDataSocket();
          writeDataSock = new DataOutputStream(dataSock.getOutputStream());
          FileInputStream fileToSend = new FileInputStream(filename);
@@ -374,7 +375,7 @@ public class FTP_Client extends javax.swing.JFrame
    {
       try
       {
-         writeControlSock.writeChars("GET " + filename +"\n");
+         writeControlSock.println("GET " + filename);
          writeControlSock.flush();
          openDataSocket();
          readDataSock = new DataInputStream(new BufferedInputStream(dataSock.getInputStream()));
@@ -437,7 +438,7 @@ public class FTP_Client extends javax.swing.JFrame
             readControlSock = new BufferedReader(
                   new InputStreamReader(controlSock.getInputStream()));
             writeControlSock = 
-                  new DataOutputStream(controlSock.getOutputStream());
+                  new PrintWriter(controlSock.getOutputStream());
             connectedToServer();
             listRemoteFiles();
          }

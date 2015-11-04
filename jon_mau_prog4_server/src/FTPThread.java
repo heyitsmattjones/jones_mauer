@@ -63,20 +63,19 @@ public class FTPThread extends Thread
             throw new Exception("null request send from client");
          StringTokenizer st = new StringTokenizer(request);
          String method = st.nextToken();  //1st should be GET or PUT
-         if(method.equals("GET"))
+         switch (method)
          {
-            //perform GET Operations (giving to client)
-            performGet(st.nextToken());  //2nd should be file name
-            
+            case "GET":
+               //perform GET Operations (giving to client)
+               performGet(st.nextToken());  //2nd should be file name
+               break;
+            case "PUT":
+               //perform PUT operations (getting from client)
+               performPut(st.nextToken());   //2nd should be filename
+               break;
+            default:
+               throw new Exception("Invalid request sent: " + method);
          }
-         else if(method.equals("PUT"))
-         {
-            //perform PUT operations (getting from client)
-            performPut(st.nextToken());   //2nd should be filename
-            
-         }
-         else
-            throw new Exception("Invalid request sent: " + method);
       }
       catch(IOException e)
       {
