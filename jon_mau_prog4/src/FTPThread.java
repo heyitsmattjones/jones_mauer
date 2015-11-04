@@ -14,7 +14,9 @@ import java.util.StringTokenizer;
 */
 public class FTPThread extends Thread
 {
-   private Socket sock = null;  //contorl socket connection
+   private Socket sock = null;  //contorl socket connection  
+   private Socket dataSock;
+   private ServerSocket dataServer;   //data socket connection
    private final int DATA_PORT = 5720;
    private final int CHUNK_SIZE = 1024;
    private FileInputStream inCtrlReq; //for requests from control connect
@@ -60,20 +62,18 @@ public class FTPThread extends Thread
          if (request == null)
             throw new Exception("null request send from client");
          StringTokenizer st = new StringTokenizer(request);
-         String method = st.nextToken();
+         String method = st.nextToken();  //1st should be GET or PUT
          if(method.matches("GET"))
          {
             //perform GET Operations (giving to client)
-            writeCtrlSock.writeInt(DATA_PORT); //send the client the data port
-            ServerSocket dataSock = new ServerSocket(DATA_PORT);
-            dataSock.accept();
-            System.out.println("Established Data Connections with "
-                     + dataSock.getInetAddress().toString() + " on Port #"
-                  + DATA_PORT);
+            performGet(st.nextToken());  //2nd should be file name
+            
          }
          else if(method.matches("PUT"))
          {
             //perform PUT operations (getting from client)
+            performPut(st.nextToken());   //2nd should be filename
+            
          }
          else
             throw new Exception("Invalid request sent");
@@ -83,6 +83,52 @@ public class FTPThread extends Thread
          e.toString();
       }
       catch(Exception e)
+      {
+         e.toString();
+      }
+   }
+   
+   private void sendList()
+   {
+      try
+      {
+         writeCtrlSock.writeChars(listFiles());
+      }
+      catch(IOException e)
+      {
+         e.toString();
+      }
+   }
+   
+   private void performGet(String fileName)
+   {
+      try
+      {
+         openDataPort();
+         writeDataSock = new DataOutputStream(dataSock.getOutputStream());
+         sendFile(fileName);
+         writeDataSock.close();
+         closeDataConnections();
+      }
+      catch(IOException e)
+      {
+         e.toString();
+      }
+   }
+   
+   private void performPut(String fileName)
+   {
+      try
+      {
+         openDataPort();
+         readDataSock = 
+               new DataInputStream(
+                     new BufferedInputStream(dataSock.getInputStream()));
+         getFile(fileName);
+         readDataSock.close();
+         closeDataConnections();
+      }
+      catch(IOException e)
       {
          e.toString();
       }
@@ -165,18 +211,6 @@ public class FTPThread extends Thread
       }
    }
    
-   private void openDataSock()
-   {
-      try
-      {
-         dataSock = new Socket(sock.getInetAddress(), DATA_PORT);
-      }
-      catch(IOException e)
-      {
-         e.toString();
-      }
-   }
-   
    private void closeConnections()
    {
       try
@@ -189,23 +223,53 @@ public class FTPThread extends Thread
       }
    }
    
-   private void sendThroughControl(String toSend)
+   private void openDataPort()   //complete not tested
    {
       try
       {
-         writeCtrlSock.writeBytes(toSend);
-         byte[] buffer = new byte[CHUNK_SIZE];
-         int numBytes;
-         numBytes = inRequests.read(buffer);
-         while(numBytes != -1)
-         {
-            writeCtrlSock.write(buffer, 0, numBytes);
-            numBytes = inRequests.read(buffer);
-         }
+         writeCtrlSock.writeInt(DATA_PORT); //send the client the data port
+         dataServer = new ServerSocket(DATA_PORT);
+         dataSock = dataServer.accept();  //creates a socket
+         System.out.println("Established Data Connections with "
+                  + dataSock.getInetAddress().toString() + " on Port #"
+                  + DATA_PORT);
       }
       catch(IOException e)
       {
          e.toString();
       }
    }
+   
+   private void closeDataConnections() //complete not tested
+   {
+      try
+      {
+         writeDataSock.close();
+         dataSock.close();
+         dataServer.close();
+      }
+      catch(IOException e)
+      {
+         e.toString();
+      }
+   }
+//   private void sendThroughControl(String toSend)
+//   {
+//      try
+//      {
+//         writeCtrlSock.writeBytes(toSend);
+//         byte[] buffer = new byte[CHUNK_SIZE];
+//         int numBytes;
+//         numBytes = inRequests.read(buffer);
+//         while(numBytes != -1)
+//         {
+//            writeCtrlSock.write(buffer, 0, numBytes);
+//            numBytes = inRequests.read(buffer);
+//         }
+//      }
+//      catch(IOException e)
+//      {
+//         e.toString();
+//      }
+//   }
 }
