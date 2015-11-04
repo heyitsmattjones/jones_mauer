@@ -1,0 +1,399 @@
+<HTML>
+<HEAD>
+<TITLE>Software Development Ground Rules for CS 2430</TITLE>
+</HEAD>
+
+<BODY>
+<center>
+<h2>Software Development Ground Rules for CS 2430</h2>
+</center>
+
+<h3>General Rules</h3>
+
+<ul>
+<li>All programs must be done using NetBeans 8.0
+  
+<p>
+<li>Some programming assignments will be done individually, some will 
+be done in groups.  For those that are to be done individually, it's okay
+to discuss isolated details with others and to give and receive
+debugging help, but only <em>in moderation</em>.  You <em>must</em> not
+borrow other people's work or compare more than a few lines of your work
+(either printed or on the screen) with others.  Excessive collaboration
+will result in a 0 on the assignment for <em>all</em> students involved.
+According to Chapter UWS 14 Student Academic Disciplinary Procedures, 
+14.06 Section (3), a summary of the excessive-collaboration-incident 
+will be sent to the Dean of Students. 
+
+<p>
+<li>All programs must adhere to the style and documentation standards
+given below.  All test documents and class diagrams must adhere to the
+standards given below.  Maximum deductions for not following the standards are
+listed for each category, near the end of this document.
+
+<p>
+<li>Some programs must be submitted using the Grader program (available on the
+share drive) on or before the grace date/time. 
+If your program does not compile or run under the Grader by the 
+grace date/time, you automatically get 0 points for that program.</b>
+However, you still must complete the program to pass the course. 
+The Grader checks that your program compiles and runs. 
+It also checks to see how closely your output matches the required output.
+When submitting to the Grader, only submit the Java files unless
+the program description instructs you to do otherwise.
+
+<p>
+<li>Some programs may need to be demonstrated in my office.
+The grade for these programs will be based on the demonstration as 
+well as the Grader output and style, documentation, decomposition, 
+test document, etc.
+
+</ul>
+
+
+<h3>Documentation Standards</h3>
+
+Files must be documented according to the javadoc standards.
+A javadoc comment is made up of two parts - a description followed 
+by zero or more tags.
+
+<p>
+<tt>
+<pre>
+    /** 
+    This is the one sentence, descriptive summary, part of a doc comment.
+    There can be more lines after the first one.
+    ....
+    @tag1    Comment for the tag1
+    @tag2    Comment for the tag2
+    ...
+    */
+</pre></tt>
+
+The first line is indented to line up with the code below the comment, 
+and starts with /** followed by a return.
+The last line begins with */ followed by a return. 
+The comment for a code entity (class or method) must be immediately before the code entity.
+The first sentence of each doc comment should be a summary sentence, containing a 
+concise but complete description of the code entity.  It is important 
+to write crisp and informative initial sentences that can stand on their own.  
+This sentence ends at the first period that is followed by a blank, tab, or 
+line terminator, or at the first tag.  Any tags come at the end.
+<P>
+
+Minimally, we require the following documentation:
+
+<ul>
+<p>
+<li>Comment block at the top of each class
+
+<p>
+<tt><pre>
+/**
+First, a single, very descriptive sentence describing the class.
+Then, a couple more sentences of description to elaborate.
+@author  "your name goes here, but not in quotes"
+*/
+</pre></tt>
+Since we usually have one class per file, this usually serves
+as the "file" comment block.
+
+<p>
+<li>Every method and constructor must start with a comment block which 
+describes what the method (or constructor) does (points lost otherwise).  
+The first sentence must be a very descriptive summary of the method (or constructor).
+The following lines, if necessary, elaborate and/or give any extra 
+information the user should know.  
+All parameters must be listed using the @param tag.  
+If there is a return value, it is listed with the @return tag.
+For example:
+
+<p>
+<tt><pre>
+    /**
+    Deletes the person with the given name from the list.
+    Does nothing if name doesn't appear in the list.
+    @param name  of the person to delete
+    @return  true is person was deleted, false otherwise
+    */
+    public boolean deletePerson(String name)
+</pre></tt>
+
+<p>
+<li>You can comment sections of code within methods.
+Use the // comments when you do.
+But don't overdo it!
+Excessive comments can be distracting, and comments that add nothing to the
+understanding of the code are particularly distracting.  For example,
+<pre>
+        count = count + 1;      // add one to count
+</pre>
+is a useless comment.  For the most part, you shouldn't need more than one
+line of comments within methods for every few lines of code.  If you feel
+you need to write a comment to make a section of code clear, then you
+probably should break that section out into a separate method!
+</ul>
+
+<h3>Names</h3>
+
+<ul>
+<li><b>Use descriptive names!</b> You'll find that this not only improves
+your grade, but it also makes your programs easier to write and debug.  If
+you're tempted to use a poor name for something, then you probably don't
+completely understand the problem you're trying to solve yet!  Figure that
+out first before trying to go on.
+
+<p>
+<li>Variable and data members:
+<ul>
+<li>These should generally be nouns or noun phrases such as
+<tt>grade</tt> and <tt>gradeForStudent</tt>.  The exception is
+<tt>for</tt> loop counters; this is the only place where it is
+<em>sometimes</em> acceptable to use a one-letter name such as <tt>i</tt>.
+
+<li>These names must start with a small letter and each subsequent word
+in a multi-word name must be capitalized.  Use lower case for the remaining letters.
+</ul>
+
+<p>
+<li>Method names:
+<ul>
+<li>Names for methods with a return type of <tt>void</tt> 
+should generally be verb phrases such as <tt>printOrders()</tt>.
+<li>Names for methods with other return types should generally be nouns
+or noun phrases such as <tt>monthlySalary()</tt>.
+<li>Method names shall start with a small letter and each subsequent word
+in a multi-word name shall be capitalized.  Use lower case for the remaining letters.
+</ul>
+
+<p>
+<li>Class names:
+<ul>
+<li>Use meaningful common nouns.
+<li>Start each class name with an upper-case letter, and capitalize each
+"word" in a multi-word name.  Use lower case for the remaining letters.
+</ul>
+
+<p>
+<li>Names for constants (final variables):
+<ul>
+<li>Use meaningful nouns or noun phrases.  For example, the name
+<tt>TEN</tt> in 
+<pre>
+        public final int TEN = 10; // useless!
+</pre>
+doesn't add to the understanding of the program at all.
+<li>Use upper case for the letters, with underscores to separate words.
+<li>In general, any value other than 0 or 1 should be given a name in a
+constant declaration.
+</ul>
+
+</ul>
+
+
+<h3>Formatting</h3>
+
+<ul>
+<li>Indent your programs!  You must indent 3 spaces
+<ul>
+<li>inside all brace pairs, and
+<li>for simple statements following <tt>if</tt>, <tt>while</tt>,
+<tt>for</tt>, <tt>switch</tt>, and <tt>do</tt>.
+</ul>
+You should be sure your editor is set up to indent each line by 3 spaces
+and that it does <em>not</em> insert tab characters in the source code.
+
+<p>
+<li>Statements that are spread over multiple lines must be indented to make
+it obvious which lines are continuations.  For example,
+<pre>
+        System.out.print("This is a message that's broken into two"
+                         + " parts for no good reason.");
+</pre>
+
+<p>
+<li>When a line gets too long (more than 78 columns), break it at a
+reasonable place.  
+
+<p>
+<li>Each brace (<tt>{</tt> and <tt>}</tt>) must appear on its own line.
+Line up the braces to make it clear how they are matched.  For example,
+<pre>
+        if ( radius &gt 0 )
+        {
+           area = PI * radius * radius;
+        }
+</pre>
+
+<p>
+<li>Each line must contain at most one statement, though a single
+statement may be spread over multiple lines.
+
+<p>
+<li>There must be a space before and after each operator.  Use one space
+after a comma.
+
+<p>
+<li>Skip lines between different sections of the program and between different methods.
+</ul>
+
+<h3>Output</h3>
+<ul>
+<p>
+<li>You must follow the output format exactly.  <b>Be sure to look at your output!</b>  
+Does it make sense to you?
+Just because your program produces output doesn't mean it works!
+</ul>
+
+<h3>Unit Tests</h3>
+<ul>
+<li>For some programs, unit tests with JUnit and/or test-bed mains will be required
+<li>The tests for the units must be thorough
+<li>Details will be specified in the program description
+<p>
+</ul>
+
+
+<h3>Test Specification</h3>
+<ul>
+<p>
+<li>For some programs, a test specification will be required.
+<li>The test specification must be done in MSWord and turned in by the specified date/time.
+<li>The test specification must have tests to cover the cases implied by the program description
+<li>The test specification must list each case, with a description for the case, 
+the precise input required, and the result expected. Each case must be separate and stand-alone.
+ There are different ways to do this.
+A table is preferred.  But it could be something as simple as:
+<pre>
+    Test Cases for RPN Program
+
+        1. Valid expression, multiple operators
+             Input:  3 5 4 - 6 + *
+             Expected Results:  The value is 21
+           
+        2. Too many operands
+             Input:  4 5 6 +
+             Expected Results: Error message
+                 "Invalid Postfix Expression - Too many operands"
+
+        3. Divide by 0
+             Input:  4 0 /
+             Expected Results: Error message
+                 "Invalid Postfix Expression - Division by 0"
+
+        etc.
+</pre>
+</ul>
+
+
+<h3>Class Diagrams</h3>
+<ul>
+<p>
+<li>Some programs will have a class diagram required
+<li>The class diagram must use the UML notation discussed in class
+<li>The diagram must show the classes and the relationships between the 
+classes.  Only the class names need to be specified; attributes or 
+operations for the classes don't need to be included.
+<li>Specify all the classes, including classes such as Vector, Button, 
+List, etc.
+<li>You can draw these by hand or use some package, such as MSWord or Rational
+Rose.
+</ul>
+
+
+<h3>Program Grading</h3>
+
+The programs you turn in should be considered "polished works of art!"
+There are many factors that will determine your grade on a program.
+Certainly it is expected that your program will compile, run, and produce
+the correct output.  But merely satisfying these criteria does not guarantee
+you will receive any points!  It is expected that you will apply the object-oriented
+techniques and data structure concepts covered in this course.  If not, there
+would be no reason for you to be taking this course!  Also, it is expected that you
+will adhere to the style and documentation guidelines.  Furthermore, most programs
+will require a test specification and a class diagram, which will figure in to your 
+program grade.  Sometimes there will be other requirements, such as JUnit tests and/or "test-bed mains"
+for certain classes, that will affect your program grade.
+
+The maximum points that can be lost for each of these categories is listed below.
+These assume a 25 point program, but will be appropriately scaled if the number of points is not 25.
+Note that although these numbers total more than the 25 points, the lowest grade
+you can receive for a program is 0 (no negative grades).  But please recall that
+all programs must be completed to pass the course.
+
+<h3>Maximum Point Losses</h3>
+<ul>
+<p>
+<li>Doesn't Compile:  25 (this is also the minimum off)
+<li>Run-time Error:   25 (this is also the minimum off)
+<li>Output Errors: 20
+<li>OO or Data Structure infractions: 20
+<li>Style & Documentation: 7 (further broken down below)
+<li>Test Specification: 5
+<li>Unit Tests: 5 per required class
+<li>Class Diagram: 4
+<li>Extra/unnecessary files submitted to grader: 1 point per file
+</ul>
+
+Below are further breakdowns for style and documentation:
+<p>
+<center>
+<table border=0>
+<tr>
+<th width=250>Guideline Violated</th>
+<th>each offense</th>
+<th>max off</th>
+</tr>
+
+<tr>
+<td height=1>Class Comment</td>
+<td align=center>1</td>
+<td align=center>2</td>
+</tr>
+
+<tr>
+<td>Method/Constructor comment block</td>
+<td align=center>0.5</td>
+<td align=center>3</td>
+</tr>
+
+<tr>
+<td>Braces lined up</td>
+<td align=center>0.5 </td>
+<!-- <td align=center>0.5 (one "free" mistake)</td> -->
+<td align=center>2</td>
+</tr>
+
+<tr>
+<td>Naming Conventions</td>
+<td align=center>0.5 </td>
+<!-- <td align=center>0.5 (one "free" mistake)</td> -->
+<td align=center>3</td>
+</tr>
+
+<tr>
+<td>Indentation</td>
+<td align=center>0.5 </td>
+<!-- <td align=center>0.5 (one "free" mistake)</td> -->
+<td align=center>2</td>
+</tr>
+
+<tr>
+<td>Magic Numbers</td>
+<td align=center>0.5</td>
+<td align=center>2</td>
+</tr>
+
+<tr>
+<td>Space between Operators</td>
+<td align=center>0.5 </td>
+<!-- <td align=center>0.5 (two "free" mistakes)</td> -->
+<td align=center>1</td>
+</tr>
+
+
+</table>
+</center>
+
+
+</HTML>

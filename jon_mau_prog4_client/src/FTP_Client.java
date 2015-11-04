@@ -88,7 +88,7 @@ public class FTP_Client extends javax.swing.JFrame
       outputMsgLbl = new javax.swing.JLabel();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-      setTitle("*COMPLETELY LEGAL* Awesome FTP Tool + Ultra Platinum Premium Rewards ©1993-2015");
+      setTitle("Ultimate FTP Tool ©2015");
       setResizable(false);
 
       outputTxtArea.setColumns(20);
@@ -199,21 +199,19 @@ public class FTP_Client extends javax.swing.JFrame
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(serverFilesLbl)
                .addComponent(clientFilesLbl))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+               .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
+               .addComponent(jScrollPane2))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-               .addGroup(layout.createSequentialGroup()
-                  .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(putBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-               .addGroup(layout.createSequentialGroup()
-                  .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(getBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(getBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(putBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGap(32, 32, 32)
             .addComponent(outputMsgLbl)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(32, Short.MAX_VALUE))
+            .addGap(32, 32, 32))
       );
 
       pack();
@@ -322,9 +320,14 @@ public class FTP_Client extends javax.swing.JFrame
          StringTokenizer st = new StringTokenizer(remoteFiles);
          int numTokens = st.countTokens();
          remoteFilesList.clear();
+         String file = "";
          for (int i = 0; i < numTokens; i++)
          {
-            remoteFilesList.add(st.nextToken());
+            file = st.nextToken();
+            if (validFileName(file))
+            {
+               remoteFilesList.add(file);
+            }
          }
          serverFileList.setListData(remoteFilesList);
       }
@@ -345,12 +348,18 @@ public class FTP_Client extends javax.swing.JFrame
       localFilesList.clear();
       for (File file : files)
       {
-         if (file.isFile())
+         if (file.isFile() && validFileName(file.getName()))
          {
             localFilesList.add(file.getName());
          }
       }
       clientFileList.setListData(localFilesList);
+   }
+   
+   private boolean validFileName(String file)
+   {
+      //System files that should not display in list
+      return !file.equals(".DS_Store");
    }
    
    /**
@@ -390,9 +399,8 @@ public class FTP_Client extends javax.swing.JFrame
          try
          {
             writeDataSock.close();
-            writeCommLine("Data Connection Closed.");
-            updateFileLists();
             closeDataSocket();
+            updateFileLists();
          }
          catch (IOException ex)
          {
@@ -441,9 +449,8 @@ public class FTP_Client extends javax.swing.JFrame
          try
          {
             readDataSock.close();
-            writeCommLine("Data Connection Closed.");
-            updateFileLists();
             closeDataSocket();
+            updateFileLists();
          }
          catch (IOException ex)
          {
@@ -505,9 +512,7 @@ public class FTP_Client extends javax.swing.JFrame
       {
          String dataPortNum = readControlSock.readLine();
          int portNum = Integer.parseInt(dataPortNum);
-         System.out.println(portNum +"");
          dataSock = new Socket(hostAddress, portNum);
-         System.out.println("Socket Created");
       }
       catch (IOException ex)
       {
