@@ -44,7 +44,18 @@ public class FTP_Client extends javax.swing.JFrame
       this.remoteFilesList = new Vector();
       initComponents();
       this.setLocationRelativeTo(null);
-      listLocalFiles();
+      try
+      {
+         readControlSock = new BufferedReader(
+                  new InputStreamReader(controlSock.getInputStream()));
+         writeControlSock = 
+               new DataOutputStream(controlSock.getOutputStream());
+         listLocalFiles();
+      }
+      catch(IOException e)
+      {
+         e.toString();
+      }
    }
 
    /**

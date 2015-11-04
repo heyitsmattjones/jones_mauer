@@ -39,8 +39,6 @@ public class FTPThread extends Thread
          writeDataSock = null;   //initiallize only when needed
          inStreamFile = null;    //initiallized when sending a file
          readDataSock = null;    //initiallized when data is being received
-         readCtrlBuff = new BufferedReader(
-               new InputStreamReader(sock.getInputStream()));
       }
       catch(IOException e)
       {
