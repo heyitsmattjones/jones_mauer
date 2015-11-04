@@ -365,6 +365,7 @@ public class FTP_Client extends javax.swing.JFrame
          try
          {
             writeDataSock.close();
+            closeDataSocket();
             writeCommLine("Data Connection Closed.");
             updateFileLists();
          }
@@ -408,6 +409,7 @@ public class FTP_Client extends javax.swing.JFrame
          try
          {
             readDataSock.close();
+            closeDataSocket();
             writeCommLine("Data Connection Closed.");
             updateFileLists();
          }
