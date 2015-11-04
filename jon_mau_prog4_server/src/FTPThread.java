@@ -268,7 +268,7 @@ public class FTPThread extends Thread
       }
       catch(FileNotFoundException e)
       {
-         System.out.println(e.toString());
+         System.out.println("Cannot write this file" + e.toString());
       }
       catch(IOException e)
       {
