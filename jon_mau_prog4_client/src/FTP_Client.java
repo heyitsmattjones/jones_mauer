@@ -374,7 +374,8 @@ public class FTP_Client extends javax.swing.JFrame
    {
       try
       {
-         writeControlSock.writeChars("GET " + filename);
+         writeControlSock.writeChars("GET " + filename +"\n");
+         writeControlSock.flush();
          openDataSocket();
          readDataSock = new DataInputStream(new BufferedInputStream(dataSock.getInputStream()));
          FileOutputStream outStreamFile = new FileOutputStream(filename);
