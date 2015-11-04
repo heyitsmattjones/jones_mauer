@@ -95,6 +95,7 @@ public class FTPThread extends Thread
       }
       catch(Exception e)
       {
+         stillConnected = false;
          System.out.println(e.toString());
       }
    }
