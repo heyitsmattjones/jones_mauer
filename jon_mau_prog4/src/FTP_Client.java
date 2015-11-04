@@ -454,8 +454,6 @@ public class FTP_Client extends javax.swing.JFrame
          String dataPortNum = readControlSock.readLine();
          int portNum = Integer.parseInt(dataPortNum);
          dataSock = new Socket(hostAddress, portNum);
-         readDataSock = new BufferedReader(new InputStreamReader(controlSock.getInputStream()));
-         writeDataSock = new DataOutputStream(controlSock.getOutputStream());
       }
       catch (IOException ex)
       {
