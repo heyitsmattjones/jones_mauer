@@ -307,6 +307,7 @@ public class FTP_Client extends javax.swing.JFrame
          }
          StringTokenizer st = new StringTokenizer(remoteFiles);
          int numTokens = st.countTokens();
+         remoteFilesList.clear();
          for (int i = 0; i < numTokens; i++)
          {
             remoteFilesList.add(st.nextToken());
@@ -323,6 +324,7 @@ public class FTP_Client extends javax.swing.JFrame
    {
       File dir = new File("./Files");
       File[] files = dir.listFiles();
+      localFilesList.clear();
       for (File file : files)
       {
          if (file.isFile())
@@ -407,6 +409,7 @@ public class FTP_Client extends javax.swing.JFrame
          {
             readDataSock.close();
             writeCommLine("Data Connection Closed.");
+            updateFileLists();
          }
          catch (IOException ex)
          {
@@ -507,6 +510,8 @@ public class FTP_Client extends javax.swing.JFrame
       try
       {
          controlSock.close();
+         readControlSock.close();
+         writeControlSock.close();
          disconnectedFromServer(controlSock);
       }
       catch (IOException ex)
