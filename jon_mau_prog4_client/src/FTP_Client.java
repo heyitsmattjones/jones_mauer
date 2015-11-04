@@ -306,7 +306,8 @@ public class FTP_Client extends javax.swing.JFrame
             return;
          }
          StringTokenizer st = new StringTokenizer(remoteFiles);
-         for (int i = 0; i < st.countTokens(); i++)
+         int numTokens = st.countTokens();
+         for (int i = 0; i < numTokens; i++)
          {
             remoteFilesList.add(st.nextToken());
          }
