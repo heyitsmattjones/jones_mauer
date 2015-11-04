@@ -63,6 +63,7 @@ public class FTPThread extends Thread
             throw new Exception("null request send from client");
          StringTokenizer st = new StringTokenizer(request);
          String method = st.nextToken();  //1st should be GET or PUT
+         System.out.println(method);
          switch (method)
          {
             case "GET":

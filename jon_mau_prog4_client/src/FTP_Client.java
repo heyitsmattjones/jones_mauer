@@ -437,7 +437,7 @@ public class FTP_Client extends javax.swing.JFrame
             readControlSock = new BufferedReader(
                   new InputStreamReader(controlSock.getInputStream()));
             writeControlSock = 
-                  new PrintWriter(controlSock.getOutputStream());
+                  new PrintWriter(controlSock.getOutputStream(), true);
             connectedToServer();
             listRemoteFiles();
          }
