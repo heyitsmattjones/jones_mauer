@@ -49,10 +49,10 @@ public class FTPThread extends Thread
    @Override
    public void run()
    {
+      sendList();
       while(true)
       {
-      sendList();
-      readCommand();
+         readCommand();
       }
    }
    
@@ -80,6 +80,7 @@ public class FTPThread extends Thread
             default:
                throw new Exception("Invalid request sent: " + method);
          }
+         sendList();
       }
       catch(IOException e)
       {
@@ -144,7 +145,7 @@ public class FTPThread extends Thread
       String toSend = "";
       try
       {
-         File dir = new File("Files");     //creates File & sets file pathname, I think this specifies which folder to look in.
+         File dir = new File("./Files");     //creates File & sets file pathname, I think this specifies which folder to look in.
          File[] files = dir.listFiles();   //get the list of all files in dir
          int j = 0;
          for (File file : files)

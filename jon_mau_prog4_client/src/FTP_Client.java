@@ -321,7 +321,7 @@ public class FTP_Client extends javax.swing.JFrame
    
    private void listLocalFiles()
    {
-      File dir = new File("./");
+      File dir = new File("./Files");
       File[] files = dir.listFiles();
       for (File file : files)
       {
@@ -364,6 +364,7 @@ public class FTP_Client extends javax.swing.JFrame
          {
             writeDataSock.close();
             writeCommLine("Data Connection Closed.");
+            updateFileLists();
          }
          catch (IOException ex)
          {
@@ -572,6 +573,12 @@ public class FTP_Client extends javax.swing.JFrame
    public void writeCommErrorLine(String errorMsg, Exception ex)
    {
       outputTxtArea.append("Error: " + errorMsg + "\n     " + ex.toString() + "\n");
+   }
+   
+   private void updateFileLists()
+   {
+      listRemoteFiles();
+      listLocalFiles();
    }
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
