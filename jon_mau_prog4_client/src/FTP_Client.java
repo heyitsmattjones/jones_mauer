@@ -454,7 +454,7 @@ public class FTP_Client extends javax.swing.JFrame
    Checks the status of the connection to the server.
    @return true if a connection exists, false otherwise
    */
-   public boolean isConnectedToServer()
+   private boolean isConnectedToServer()
    {
       return connectionBtn.getText().equals("Disconnect");
    }
@@ -465,11 +465,11 @@ public class FTP_Client extends javax.swing.JFrame
    establish a connection with the specified server of if the port number is
    invalid.
    */
-   public void openControlSocket()
+   private void openControlSocket()
    {
       try
       {
-         if (addressAndPortNumHaveValue())
+         if (addressAndPortNumHaveGoodValue())
          {
             int portNum = Integer.parseInt(portTxtFld.getText());
             hostAddress = hostTxtFld.getText();
@@ -497,7 +497,7 @@ public class FTP_Client extends javax.swing.JFrame
    Appropriate error messages are printed if the program is unable to
    establish a connection with the specified server.
    */
-   public void openDataSocket()
+   private void openDataSocket()
    {
       try
       {
@@ -518,7 +518,7 @@ public class FTP_Client extends javax.swing.JFrame
    @return true if neither the address nor the port number are null,
    false otherwise
    */
-   public boolean addressAndPortNumHaveValue()
+   private boolean addressAndPortNumHaveGoodValue()
    {
       if (hostTxtFld.getText().equals(""))
       {
@@ -535,27 +535,34 @@ public class FTP_Client extends javax.swing.JFrame
    }
    
    /**
-   Terminates a connection with the connected server. Appropriate error
-   messages are printed if the program encounters a problem closing the
-   connection with the server.
+   Terminates the control connection with the connected FTP server.
+   Appropriate error messages are printed if the program encounters a problem
+   closing the connection with the server.
    */
-   public void closeControlSocket()
+   private void closeControlSocket()
    {
       try
       {
          controlSock.close();
          readControlSock.close();
          writeControlSock.close();
-         disconnectedFromServer(controlSock);
       }
       catch (IOException ex)
       {
          writeCommErrorLine("Problem closing connection", ex);
-         disconnectedFromServer(controlSock);
+      }
+      finally
+      {
+         disconnectedFromServer();
       }
    }
    
-   public void closeDataSocket()
+   /**
+   Terminates the data connection with the connected FTP server.
+   Appropriate error messages are printed if the program encounters a problem
+   closing the connection with the server.
+   */
+   private void closeDataSocket()
    {
       try
       {
@@ -573,47 +580,51 @@ public class FTP_Client extends javax.swing.JFrame
    }
    
    /**
-   Prints a message in the window and changes the text on the connection
-   button to "Disconnect" when the connection with the server is established.
+   Prints a message in the Output Messages and changes the text on the
+   connection button to "Disconnect" when a connection with the server is
+   established.
    */
-   public void connectedToServer()
+   private void connectedToServer()
    {
       writeCommLine("Connected to Server");
       connectionBtn.setText("Disconnect");
    }
    
    /**
-   Prints a message in the window and changes the text on the connection
-   button to "Connect" when the connection with the server is terminated.
-    * @param sock
+   Prints a message in the Output Messages and changes the text on the
+   connection button to "Connect" when the connection with the server is
+   terminated.
    */
-   public void disconnectedFromServer(Socket sock)
+   private void disconnectedFromServer()
    {
       writeCommLine("Disconnected from Server");
       connectionBtn.setText("Connect");
-      sock = null;
+      controlSock = null;
    }
    
    /**
-   Writes a line of text to the Client/Server Communication text area
-   @param textToWrite is the text to be printed in the window
+   Writes a line of text to the Client Output Messages text area
+   @param textToWrite is the text to be printed in the Output Messages
    */
-   public void writeCommLine(String textToWrite)
+   private void writeCommLine(String textToWrite)
    {
       outputTxtArea.append(textToWrite + "\n");
    }
    
    /**
-   Writes an error message to the Client/Server Communication text area
+   Writes an error message to the Client Output Messages text area
    including the exception thrown as a result of the error.
    @param errorMsg is the written text description of the error
    @param ex is the exception thrown as a result of the error
    */
-   public void writeCommErrorLine(String errorMsg, Exception ex)
+   private void writeCommErrorLine(String errorMsg, Exception ex)
    {
       outputTxtArea.append("Error: " + errorMsg + "\n     " + ex.toString() + "\n");
    }
    
+   /**
+   Updates the lists of remote files and local files displayed in the JLists
+   */
    private void updateFileLists()
    {
       listRemoteFiles();
