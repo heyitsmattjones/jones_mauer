@@ -4,13 +4,15 @@
  * and open the template in the editor.
  */
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
 
@@ -18,15 +20,18 @@ import java.util.Vector;
  */
 public class FTP_Client extends javax.swing.JFrame
 {
-   Socket controlSock = null;       // Socket used to connect to Server
+   Socket controlSock = null;    // Socket used to connect to Server
+   Socket dataSock = null;       // Socket used to transfer data with Server
    String filename = "";
    boolean fileExists = true;
    boolean lineIsValid = true;
    Vector remoteFilesList;
    Vector localFilesList;
    String hostAddress = "";
-   PrintWriter writeControlSock;    // Used to write data to socket
-   BufferedReader readControlSock;  // Used to read data from socket
+   DataOutputStream writeControlSock;    // Used to write data to control socket
+   BufferedReader readControlSock;  // Used to read data from control socket
+   DataOutputStream writeDataSock;       // Used to write data to data socket
+   BufferedReader readDataSock;     // Used to read data from data socket
    
    /**
     Creates new form FTP_Client
@@ -310,7 +315,7 @@ public class FTP_Client extends javax.swing.JFrame
    
    private void listLocalFiles()
    {
-      File dir = new File("LocalFiles");
+      File dir = new File("./");
       File[] files = dir.listFiles();
       for (File file : files)
       {
@@ -324,12 +329,31 @@ public class FTP_Client extends javax.swing.JFrame
    
    private void sendFile(String filename)
    {
-      writeControlSock.println("PUT" + filename);
+      try
+      {
+         writeControlSock.writeChars("PUT " + filename);
+         openDataSocket();
+         writeDataSock = new DataOutputStream(dataSock.getOutputStream());
+         writeDataSock.writeChars(filename);
+      }
+      catch (IOException ex)
+      {
+         
+      }
    }
    
    private void getFile(String filename)
    {
-      writeControlSock.println("GET" + filename);
+      try
+      {
+         writeControlSock.writeChars("GET " + filename);
+         openDataSocket();
+         readDataSock = new BufferedReader(new InputStreamReader(dataSock.getInputStream()));
+      }
+      catch (IOException ex)
+      {
+         
+      }
    }
    
    /**
@@ -355,8 +379,6 @@ public class FTP_Client extends javax.swing.JFrame
             int portNum = Integer.parseInt(portTxtFld.getText());
             hostAddress = hostTxtFld.getText();
             controlSock = new Socket(hostAddress, portNum);
-            readControlSock = new BufferedReader(new InputStreamReader(controlSock.getInputStream()));
-            writeControlSock = new PrintWriter(controlSock.getOutputStream(), true);
             connectedToServer();
             listRemoteFiles();
          }
@@ -368,6 +390,22 @@ public class FTP_Client extends javax.swing.JFrame
       catch (NumberFormatException ex)
       {
          writeCommErrorLine("Invalid port number", ex);
+      }
+   }
+   
+   public void openDataSocket()
+   {
+      try
+      {
+         String dataPortNum = readControlSock.readLine();
+         int portNum = Integer.parseInt(dataPortNum);
+         dataSock = new Socket(hostAddress, portNum);
+         readDataSock = new BufferedReader(new InputStreamReader(controlSock.getInputStream()));
+         writeDataSock = new DataOutputStream(controlSock.getOutputStream());
+      }
+      catch (IOException ex)
+      {
+         writeCommErrorLine("Unable to establish data connection", ex);
       }
    }
    
@@ -408,6 +446,23 @@ public class FTP_Client extends javax.swing.JFrame
       {
          writeCommErrorLine("Problem closing connection", ex);
          disconnectedFromServer(controlSock);
+      }
+   }
+   
+   public void closeDataSocket()
+   {
+      try
+      {
+         dataSock.close();
+      }
+      catch (IOException ex)
+      {
+         writeCommErrorLine("Problem closing connection", ex);
+      }
+      finally
+      {
+         dataSock = null;
+         writeCommLine("Data Connection Closed.");
       }
    }
    
