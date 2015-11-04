@@ -1,6 +1,7 @@
 
-import java.net.*;
 import java.io.*;
+import java.net.*;
+import java.util.StringTokenizer;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -13,8 +14,7 @@ import java.io.*;
 */
 public class FTPThread extends Thread
 {
-   private Socket sock = null;  //contorl connection
-   private Socket dataSock = null;  //data transport connection
+   private Socket sock = null;  //contorl socket connection
    private final int DATA_PORT = 5720;
    private final int CHUNK_SIZE = 1024;
    private FileInputStream inCtrlReq; //for requests from control connect
@@ -48,6 +48,44 @@ public class FTPThread extends Thread
    public void run()
    {
       listFiles();
+   }
+   
+   private void readCommand()
+   {
+      try
+      {
+         readCtrlBuff = new BufferedReader(
+               new InputStreamReader(sock.getInputStream()));
+         String request = readCtrlBuff.readLine();
+         if (request == null)
+            throw new Exception("null request send from client");
+         StringTokenizer st = new StringTokenizer(request);
+         String method = st.nextToken();
+         if(method.matches("GET"))
+         {
+            //perform GET Operations (giving to client)
+            writeCtrlSock.writeInt(DATA_PORT); //send the client the data port
+            ServerSocket dataSock = new ServerSocket(DATA_PORT);
+            dataSock.accept();
+            System.out.println("Established Data Connections with "
+                     + dataSock.getInetAddress().toString() + " on Port #"
+                  + DATA_PORT);
+         }
+         else if(method.matches("PUT"))
+         {
+            //perform PUT operations (getting from client)
+         }
+         else
+            throw new Exception("Invalid request sent");
+      }
+      catch(IOException e)
+      {
+         e.toString();
+      }
+      catch(Exception e)
+      {
+         e.toString();
+      }
    }
    
    private String listFiles()  //completed, not verified
