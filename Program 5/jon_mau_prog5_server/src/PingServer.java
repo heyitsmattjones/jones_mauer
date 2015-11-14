@@ -8,7 +8,7 @@
 
 @author Pauer
 */
-public class Class
+public class PingServer
 {
 
 }
