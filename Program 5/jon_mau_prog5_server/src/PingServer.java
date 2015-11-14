@@ -1,19 +1,19 @@
 /**
 Program 5 consists of a basic UDP server and client.
-MORE TEXT GOES HERE
+The server listens for a packet from the client and then echoes the packet
+back to the client if there is no packet loss.
 @author Paul Mauer & Matt Jones
 */
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
-Has UDP service
+PingServer provides a UDP service for the client.
 @author Paul Mauer
 */
 public class PingServer
@@ -61,7 +61,8 @@ public class PingServer
       }
       catch (SocketException ex)
       {
-         Logger.getLogger(PingServer.class.getName()).log(Level.SEVERE, null, ex);
+         printLine("Unable to use Port: " + PORT_NUMBER + " to create a "
+               + "UDP socket", ex);
       }
    }
    
@@ -71,8 +72,9 @@ public class PingServer
    */
    public static void main(String[] args)
    {
-      //Run MAIN here
+      //Create server
       PingServer pingServer = new PingServer();
+      //Start server
       pingServer.run();
    }
    
@@ -82,18 +84,30 @@ public class PingServer
    public void run()
    {
       //allocate the memory space for an UDP packet
-            byte[] buff = new byte[PACKET_SIZE];
+      byte[] buff = new byte[PACKET_SIZE];
 
       //make an empty UDP packet
       DatagramPacket inpacket = new DatagramPacket(buff, PACKET_SIZE);
       
+      int sleepTime;
+      
+      
+      printLine("Ping Server running....");
       while(true)
       {
+         //clear sleepTime value
+         sleepTime = -1;
+         
          try
          {
+            printLine("Waiting for UDP packet....");
+            
             //receive the next UDP packet
-            //Throws IOException
+            //May throw IOException
             udpSocket.receive(inpacket);
+            
+            printLine("Received from: " + inpacket.getAddress()
+                  + Arrays.toString(inpacket.getData()));
             
             //artificially simulate the effects of network packet loss.
             //generate a random number between 0 and 1;
@@ -104,26 +118,57 @@ public class PingServer
             if (random.nextFloat() >= LOSS_RATE)
             {
                //simulate transmission delay; DOUBLE = 2
-               //Throws InterruptedException
-               Thread.sleep((int)(random.nextDouble() * DOUBLE * AVERAGE_DELAY));
+               //May throw InterruptedException
+               sleepTime = (int)(random.nextDouble() * DOUBLE * AVERAGE_DELAY);
+               Thread.sleep(sleepTime);
 
                //make an outgoing UDP packet
                DatagramPacket outpacket = new DatagramPacket(inpacket.getData(),
                      inpacket.getLength(), inpacket.getAddress(), inpacket.getPort());
 
                //send an UDP packet
-               //Throws IOException
+               //May throw IOException
                udpSocket.send(outpacket);
+               
+               printLine("Reply sent.");
             }
+            else
+               printLine("Packet loss...., reply not sent.");
          }
          catch (IOException ex)
          {
-            Logger.getLogger(PingServer.class.getName()).log(Level.SEVERE, null, ex);
+            printLine("The packet was incorrectly received or incorrectly "
+                  + "sent", ex);
          }
          catch (InterruptedException ex)
          {
-            Logger.getLogger(PingServer.class.getName()).log(Level.SEVERE, null, ex);
+            if (sleepTime == -1)
+            {
+               printLine("There was a problem telling the program to sleep", ex);
+            }
+            printLine("There was a problem telling the program to sleep for "
+                  + sleepTime + " milliseconds", ex);
          }
       }
+   }
+   
+   /**
+   Prints a message to the system output
+   @param msg is the text to be printed to the System Output
+   */
+   private void printLine(String textToWrite)
+   {
+         System.out.println(textToWrite);
+   }
+   
+   /**
+   Prints an error message to the system output including the exception
+   thrown as a result of the error.
+   @param errorMsg is the written text description of the error
+   @param ex is the exception thrown as a result of the error
+   */
+   private void printLine(String errorMsg, Exception ex)
+   {
+      System.out.println("Error: " + errorMsg + "\n     " + ex.toString());
    }
 }
