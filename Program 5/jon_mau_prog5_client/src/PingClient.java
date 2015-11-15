@@ -63,10 +63,11 @@ public class PingClient extends UDPPinger implements Runnable
             sendPing(pm);
             PingMessage rm = receivePing();
             long receiveTime = new Date().getTime();
+            String rTime = new Date().toString();
             if(received)
                System.out.println("Recieved packet from " + rm.getIP()
-                  + " " + receiveTime);
-            long rtt = sendTime - receiveTime;
+                  + " " + rTime);
+            long rtt = receiveTime - sendTime;
             if(!received && i < NUM_PINGS - 1)  //if we didnt get a response
                rtt = ONE_SEC;
             else if(!received)
