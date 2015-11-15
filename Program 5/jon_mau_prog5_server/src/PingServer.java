@@ -109,7 +109,7 @@ public class PingServer
             
             packetReceivedSuccessfully = true;
             printLine("Received from: " + inpacket.getAddress() + " "
-                  + new String(inpacket.getData()));
+                  + new String(inpacket.getData()).trim());
             
             //artificially simulate the effects of network packet loss.
             //generate a random number between 0 and 1;
