@@ -1,14 +1,42 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
+import java.net.*;
 
 /**
 
-@author Pauer
+@author Paul Mauer & Matthew Jones
 */
 public class PingMessage
 {
+   private InetAddress ipAddress;
+   private int portNum;
+   private String payload;
+   private int seqNum; //is this the correct way?
+   
+   /**
+   @param addr
+   @param port
+   @param load 
+   */
+   public PingMessage(InetAddress addr, int port, String load)
+   {
+      ipAddress = addr;
+      portNum = port;
+      payload = load;
+      seqNum = 0;
+   }
 
+   public InetAddress getIP()
+   {
+      return ipAddress;
+   }
+
+   public int getPort()
+   {
+      return portNum;
+   }
+
+   public String getPayload()
+   {
+      return payload;
+   }   
 }
