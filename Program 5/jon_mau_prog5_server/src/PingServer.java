@@ -91,10 +91,11 @@ public class PingServer
       
       int sleepTime;
       
-      
+      boolean packetReceivedSuccessfully;
       printLine("Ping Server running....");
       while(true)
       {
+         packetReceivedSuccessfully = false;
          //clear sleepTime value
          sleepTime = -1;
          
@@ -106,6 +107,7 @@ public class PingServer
             //May throw IOException
             udpSocket.receive(inpacket);
             
+            packetReceivedSuccessfully = true;
             printLine("Received from: " + inpacket.getAddress()
                   + Arrays.toString(inpacket.getData()));
             
@@ -137,8 +139,10 @@ public class PingServer
          }
          catch (IOException ex)
          {
-            printLine("The packet was incorrectly received or incorrectly "
-                  + "sent", ex);
+            if (packetReceivedSuccessfully)
+               printLine("There was a problem sending the packet", ex);
+            else
+               printLine("There was a problem receiving the packet", ex);
          }
          catch (InterruptedException ex)
          {
