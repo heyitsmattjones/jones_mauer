@@ -108,8 +108,8 @@ public class PingServer
             udpSocket.receive(inpacket);
             
             packetReceivedSuccessfully = true;
-            printLine("Received from: " + inpacket.getAddress()
-                  + Arrays.toString(inpacket.getData()));
+            printLine("Received from: " + inpacket.getAddress() + " "
+                  + new String(inpacket.getData()));
             
             //artificially simulate the effects of network packet loss.
             //generate a random number between 0 and 1;
