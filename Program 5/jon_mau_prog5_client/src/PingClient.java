@@ -1,4 +1,9 @@
-
+/**
+Program 5 consists of a basic UDP server and client.
+The server listens for a packet from the client and then echoes the packet
+back to the client if there is no packet loss.
+@author Paul Mauer & Matt Jones
+*/
 import java.io.*;
 import java.net.*;
 import java.util.Date;

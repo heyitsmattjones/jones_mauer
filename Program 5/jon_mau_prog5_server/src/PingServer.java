@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 
@@ -46,6 +45,8 @@ public class PingServer
    //socket for receiving UDP packets
    public DatagramSocket udpSocket;
    
+   boolean validPort = true;
+   
    //======= DEFINE CLASS ATTRIBUTES - END ========
    
    
@@ -61,8 +62,8 @@ public class PingServer
       }
       catch (SocketException ex)
       {
-         printLine("Unable to use Port: " + PORT_NUMBER + " to create a "
-               + "UDP socket", ex);
+         printLine("Unable to start server on port: " + PORT_NUMBER, ex);
+         validPort = false;
       }
    }
    
@@ -79,79 +80,32 @@ public class PingServer
    }
    
    /**
-   Runs the server
+   Runs the UDP server. Waits for an incoming packet, then replies by echoing
+   the same data back to the client.
    */
    public void run()
    {
+      if (!validPort)
+         return;
       //allocate the memory space for an UDP packet
       byte[] buff = new byte[PACKET_SIZE];
 
       //make an empty UDP packet
       DatagramPacket inpacket = new DatagramPacket(buff, PACKET_SIZE);
       
-      int sleepTime;
-      
-      boolean packetReceivedSuccessfully;
       printLine("Ping Server running....");
       while(true)
       {
-         packetReceivedSuccessfully = false;
-         //clear sleepTime value
-         sleepTime = -1;
-         
-         try
+         if(receivePacket(inpacket)) //Receive a packet
          {
-            printLine("Waiting for UDP packet....");
-            
-            //receive the next UDP packet
-            //May throw IOException
-            udpSocket.receive(inpacket);
-            
-            packetReceivedSuccessfully = true;
-            printLine("Received from: " + inpacket.getAddress() + " "
-                  + new String(inpacket.getData()).trim());
-            
-            //artificially simulate the effects of network packet loss.
-            //generate a random number between 0 and 1;
-            //it’s a packet loss if the random number is less than LOSS_RATE
-            Random random = new Random(new Date().getTime());
-            
-            //If true: No Packet Loss; else Packet Loss
-            if (random.nextFloat() >= LOSS_RATE)
-            {
-               //simulate transmission delay; DOUBLE = 2
-               //May throw InterruptedException
-               sleepTime = (int)(random.nextDouble() * DOUBLE * AVERAGE_DELAY);
-               Thread.sleep(sleepTime);
-
-               //make an outgoing UDP packet
-               DatagramPacket outpacket = new DatagramPacket(inpacket.getData(),
-                     inpacket.getLength(), inpacket.getAddress(), inpacket.getPort());
-
-               //send an UDP packet
-               //May throw IOException
-               udpSocket.send(outpacket);
-               
-               printLine("Reply sent.");
-            }
-            else
+            //If true: Packet Loss; else No Packet Loss
+            if(simulatePacketLoss())
                printLine("Packet loss...., reply not sent.");
-         }
-         catch (IOException ex)
-         {
-            if (packetReceivedSuccessfully)
-               printLine("There was a problem sending the packet", ex);
             else
-               printLine("There was a problem receiving the packet", ex);
-         }
-         catch (InterruptedException ex)
-         {
-            if (sleepTime == -1)
             {
-               printLine("There was a problem telling the program to sleep", ex);
+               addTransmissionDelay();
+               sendPacket(inpacket); //Send the response packet
             }
-            printLine("There was a problem telling the program to sleep for "
-                  + sleepTime + " milliseconds", ex);
          }
       }
    }
@@ -174,5 +128,95 @@ public class PingServer
    private void printLine(String errorMsg, Exception ex)
    {
       System.out.println("Error: " + errorMsg + "\n     " + ex.toString());
+   }
+
+   /**
+   Receives an incoming packet
+   @param inpacket is the DatagramPacket to assign the incoming packet to
+   @return true if a packet is successfully received; false otherwise
+   */
+   private boolean receivePacket(DatagramPacket inpacket)
+   {
+      try
+      {
+         printLine("Waiting for UDP packet....");
+         
+         //receive the next UDP packet
+         //May throw IOException
+         udpSocket.receive(inpacket);
+         
+         printLine("Received from: " + inpacket.getAddress() + " "
+               + new String(inpacket.getData()).trim());
+         return true;
+      }
+      catch (IOException ex)
+      {
+         printLine("There was a problem receiving the packet", ex);
+         return false;
+      }
+   }
+
+   /**
+   Sends an outgoing packet
+   @param inpacket is the DatagramPacket with the data to send
+   */
+   private void sendPacket(DatagramPacket inpacket)
+   {
+      try
+      {
+         //make an outgoing UDP packet
+         DatagramPacket outpacket = new DatagramPacket(inpacket.getData(),
+               inpacket.getLength(), inpacket.getAddress(), inpacket.getPort());
+         
+         //send an UDP packet
+         //May throw IOException
+         udpSocket.send(outpacket);
+         
+         printLine("Reply sent.");
+      }
+      catch (IOException ex)
+      {
+         printLine("There was a problem sending the packet", ex);
+      }
+   }
+   
+   /**
+   Artificially simulate the effects of network packet loss.
+   It is a packet loss if the random number is less than LOSS_RATE
+   @return true if the random number is less than LOSS_RATE
+   */
+   private boolean simulatePacketLoss()
+   {
+      return getRandom().nextFloat() < LOSS_RATE;
+   }
+   
+   /**
+   generates a random number between 0 and 1;
+   @return the Random object
+   */
+   private Random getRandom()
+   {
+      return new Random(new Date().getTime());
+   }
+
+   /**
+   Simulates transmission delay
+   */
+   private void addTransmissionDelay()
+   {
+      int sleepTime = -1;
+      try
+      {
+         sleepTime = (int)(getRandom().nextDouble() * DOUBLE * AVERAGE_DELAY);
+         Thread.sleep(sleepTime);
+      }
+      catch (InterruptedException ex)
+      {
+         if (sleepTime == -1)
+            printLine("There was a problem telling the program to sleep", ex);
+         else
+            printLine("There was a problem telling the program to sleep for "
+                  + sleepTime + " milliseconds", ex);
+      }
    }
 }
