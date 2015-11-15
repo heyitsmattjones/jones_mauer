@@ -74,10 +74,10 @@ public class PingClient extends UDPPinger implements Runnable
                rtt = FIVE_SEC;
             sumRTT += rtt;
             computeLimits(rtt);
-            timingOutput += "PING " + i +": " + received + " RTT: " + rtt 
+            timingOutput += "PING " + i +": " + received + " RTT: " + rtt
                   + "\n";
          }
-         System.out.println(timingOutput);
+         System.out.print(timingOutput);
          computeRTT();
       }
       catch (SocketException | NullPointerException ex)
