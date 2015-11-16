@@ -9,22 +9,23 @@ import java.net.*;
 import java.util.Arrays;
 
 /**
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
+The UDPPinger class manages the socket connections with the client and
+server and sends the desired datagram packet to the server over UDP and also
+receives packets from the server and converting the data into a PingMessage.
+@author Matthew Jones & Paul Mauer
 */
-
-/**
- 
- @author Matt
- */
 public class UDPPinger 
 {
    private final int PACKET_SIZE = 512;
    private int myPort;
    protected DatagramSocket dataSock;
-   protected boolean received;
+   protected boolean received;  //did we receive a packet from the server
    
+   /**
+   UDPPinger constructor. Initializes the datagram socket for UDP and
+   automatically selects an available port on the client computer for 
+   communication.
+   */
    public UDPPinger()
    {
       try
@@ -38,7 +39,7 @@ public class UDPPinger
    }
    
    /**
-   
+   sendPing creates and sends the Ping datagram packet using UDP.
    @param ping 
    */
    public void sendPing(PingMessage ping)
@@ -46,8 +47,7 @@ public class UDPPinger
       DatagramPacket dataPack;
       byte[] byteLoad =  ping.getPayload().getBytes(); //convert string to byte
       dataPack = new DatagramPacket(byteLoad,
-            byteLoad.length, ping.getIP(), ping.getPort());
-      //System.out.println(dataPack.getLength() + "xxxxx " + dataPack.getOffset());
+         byteLoad.length, ping.getIP(), ping.getPort());
       try
       {
          myPort = dataSock.getLocalPort(); //may not be needed anymore
@@ -61,8 +61,9 @@ public class UDPPinger
    }
    
    /**
-   
-   @return 
+   receivePing listens for a packet sent by the Ping server and puts the 
+   relevant information into a new PingMessage object
+   @return PingMessage object sent by the server.
    */
    public PingMessage receivePing()
    {
@@ -71,10 +72,10 @@ public class UDPPinger
       {
          byte[] receiveData = new byte[PACKET_SIZE];
          DatagramPacket receivePacket = new DatagramPacket(receiveData,
-            PACKET_SIZE); //check if packet size is the right thing to use here
-         dataSock.receive(receivePacket);  //hopefully receive a packet from paul
+            PACKET_SIZE);
+         dataSock.receive(receivePacket);  //not receiving throws IOException 
          pm = new PingMessage(receivePacket.getAddress(),
-            receivePacket.getPort(), Arrays.toString(receivePacket.getData()));
+            receivePacket.getPort(),Arrays.toString(receivePacket.getData()));
          received = true;
       }
       catch(IOException e)
