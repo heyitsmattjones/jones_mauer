@@ -7,7 +7,9 @@ back to the client if there is no packet loss.
 import java.net.*;
 
 /**
-
+The PingMessage class contains all of the data that encapsulated in a ping
+request. The data is separated as the dest. IP address, the dest. port#
+and the payload, all of which can be accessed through getters.
 @author Paul Mauer & Matthew Jones
 */
 public class PingMessage
@@ -15,31 +17,43 @@ public class PingMessage
    private InetAddress ipAddress;
    private int portNum;
    private String payload;
-   private int seqNum; //is this the correct way?
    
    /**
-   @param addr
-   @param port
-   @param load 
+   PingMessage constructor. Sets  the destination IP address, port number,
+   and payload.
+   @param addr: Destination IP address
+   @param port: Destination IP number
+   @param load: Payload to send
    */
    public PingMessage(InetAddress addr, int port, String load)
    {
       ipAddress = addr;
       portNum = port;
       payload = load;
-      seqNum = 0;
    }
 
+   /**
+   getIP returns the InetAddress of the destination server.
+   @return InetAddress of destination
+   */
    public InetAddress getIP()
    {
       return ipAddress;
    }
 
+   /**
+   getPort returns the port number of the destination server
+   @return int of server port number
+   */
    public int getPort()
    {
       return portNum;
    }
 
+   /**
+   getPayload return the string representing the payload to be sent
+   @return String of the payload
+   */
    public String getPayload()
    {
       return payload;
